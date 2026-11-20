@@ -76,3 +76,7 @@ O MD Reader é um leitor, não um editor: **Salvar Markdown** exporta o conteúd
 
 ## v20 — Correção de Atualizar backup
 O botão Atualizar permite selecionar o backup diário existente mesmo quando a referência local não foi registrada ou foi perdida. Valida nome e estrutura antes de sobrescrever; exige permissão do navegador.
+
+## v21 — Menu simplificado
+
+Removida a seção Arquivos do menu lateral. Abrir Markdown continua na tela Início e no botão + Adicionar das bibliotecas. Copiar, Salvar Markdown e Compartilhar ficam nas ferramentas contextuais da leitura, acessíveis pelo botão acima da régua lateral. Nenhuma biblioteca ou documento é excluído pela atualização.
