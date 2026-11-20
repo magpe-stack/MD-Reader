@@ -44,5 +44,46 @@
         ]
       }
     }
+  ],
+  "shortcuts": [
+    {
+      "name": "Minhas Bibliotecas",
+      "short_name": "Bibliotecas",
+      "description": "Abrir suas coleções de Markdown",
+      "url": "./?view=libraries",
+      "icons": [
+        {
+          "src": "./icon-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "Abrir Markdown",
+      "short_name": "Abrir arquivo",
+      "description": "Selecionar um arquivo Markdown do dispositivo",
+      "url": "./?view=open",
+      "icons": [
+        {
+          "src": "./icon-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "Marcadores",
+      "short_name": "Marcadores",
+      "description": "Consultar trechos marcados",
+      "url": "./?view=marks",
+      "icons": [
+        {
+          "src": "./icon-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    }
   ]
 }

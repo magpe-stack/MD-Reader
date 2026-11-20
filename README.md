@@ -80,3 +80,13 @@ O botão Atualizar permite selecionar o backup diário existente mesmo quando a 
 ## v21 — Menu simplificado
 
 Removida a seção Arquivos do menu lateral. Abrir Markdown continua na tela Início e no botão + Adicionar das bibliotecas. Copiar, Salvar Markdown e Compartilhar ficam nas ferramentas contextuais da leitura, acessíveis pelo botão acima da régua lateral. Nenhuma biblioteca ou documento é excluído pela atualização.
+
+## v22 — Instalação e atalhos do PWA
+
+O manifesto oferece atalhos para **Minhas Bibliotecas**, **Abrir Markdown** e **Marcadores**. A visibilidade dos atalhos depende do navegador e do sistema operacional.
+
+Em **Sistema → Manutenção → Instalar**, o aplicativo identifica quando está em modo instalado, oferece o prompt nativo quando disponível e mostra instruções quando não há prompt. O aplicativo não força a instalação.
+
+Os atalhos usam parâmetros `?view=libraries`, `?view=open` e `?view=marks`, com caminhos relativos adequados ao GitHub Pages.
+
+As bibliotecas e preferências existentes não são apagadas na atualização. Faça backup antes de publicar.
