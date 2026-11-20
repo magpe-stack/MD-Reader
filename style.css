@@ -242,3 +242,16 @@ body[data-reading-mode="page"] #goBookmark{
  .splash-stars,.splash-glow,.splash-sparks i,#splash .splash-emblem,#splash .splash-emblem:before{animation:none!important}
  .splash-sparks{display:none}
 }
+
+/* v11: bibliotecas e marcadores */
+.marks-grid{display:grid;gap:14px;max-width:900px}
+.mark-card,.library-tile{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:18px;overflow-wrap:anywhere}
+.mark-card strong{display:block;margin-bottom:8px}
+.mark-card p{font-family:Georgia,serif;font-size:1.1rem;line-height:1.6;margin:8px 0 16px}
+.mark-actions{display:flex;gap:10px;flex-wrap:wrap}
+.mark-actions button,.library-tile-delete{min-height:44px;border:1px solid var(--border);border-radius:9px;background:var(--bg);color:var(--text);padding:8px 13px;cursor:pointer}
+.library-tile-main{width:100%;min-height:90px;border:0;background:transparent;color:var(--text);font-size:1.05rem;text-align:left;cursor:pointer}
+.book-move{display:block;margin-top:8px;width:100%;min-height:44px;border:1px solid var(--border);border-radius:8px;background:var(--bg);color:var(--text)}
+.inline-mark-symbol{display:inline-flex;align-items:center;justify-content:center;vertical-align:middle;border:0;background:transparent;font-size:1rem;line-height:1;padding:3px 5px;cursor:pointer}
+.inline-mark-symbol:focus-visible,.mark-card button:focus-visible,.library-tile button:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+@media print{.inline-mark-symbol{display:none!important}}
