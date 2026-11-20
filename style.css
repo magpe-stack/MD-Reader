@@ -397,3 +397,37 @@ body[data-view="document"][data-reading-mode="page"] .toc-rail{display:flex!impo
 body[data-reading-mode="page"] #toc{display:none!important}
 body[data-view="document"] .actions #searchBtn,body[data-view="document"] .actions #favoriteBtn,body[data-view="document"] .actions #readingModeBtn,body[data-view="document"] .actions #bookmarkBtn,body[data-view="document"] .actions #focusBtn,body[data-view="document"] .actions #appearanceBtn{display:none!important}
 body[data-view="document"] .toc-rail[hidden]{display:none!important}
+
+/* v17 — bandeja direita slim, sem barra de rolagem */
+#appearancePanel.compact-reading-panel{
+ top:74px!important;right:9px!important;bottom:auto!important;
+ width:min(296px,calc(100vw - 18px))!important;
+ max-height:none!important;overflow:visible!important;
+ padding:12px!important;border-radius:18px!important;
+ box-shadow:0 12px 36px #0002!important;
+ border:1px solid var(--line)!important;
+}
+.compact-reading-panel .appearance-head{margin-bottom:6px}
+.compact-reading-panel .appearance-head h2{font-size:1rem}
+.compact-reading-panel .slim-fold{border:1px solid var(--line);border-radius:12px;margin:6px 0;background:var(--surface);overflow:hidden}
+.compact-reading-panel .slim-fold>summary{list-style:none;cursor:pointer;min-height:40px;display:flex;align-items:center;justify-content:space-between;padding:8px 11px;font-weight:700;font-size:.86rem}
+.compact-reading-panel .slim-fold>summary::-webkit-details-marker{display:none}
+.compact-reading-panel .slim-fold>summary::after{content:'⌄';font-size:1.1rem;transition:transform .2s}
+.compact-reading-panel .slim-fold[open]>summary::after{transform:rotate(180deg)}
+.compact-reading-panel .pref-group{margin:0!important;border:0!important;border-top:1px solid var(--line)!important;border-radius:0!important;padding:8px 10px 10px!important}
+.compact-reading-panel .pref-group h3{display:none}
+.compact-reading-panel .pref-group label{margin:4px 0!important}
+.compact-reading-panel .pref-group input[type=range]{margin:3px 0!important}
+.compact-reading-panel .palette-preview{height:18px!important}
+/* O menu flutuante permanece próximo ao cabeçalho, acima da régua. */
+body[data-view="document"] .toc-rail,body[data-view="document"][data-reading-mode="page"] .toc-rail{
+ top:76px!important;transform:none!important;justify-content:flex-start!important;
+ max-height:calc(100dvh - 88px)!important;
+}
+.rail-tools-toggle{width:32px;height:32px;min-width:32px;min-height:32px;
+ border-radius:50%;font-size:17px;line-height:1;display:grid;place-items:center;
+ border:1px solid var(--line);background:var(--surface);box-shadow:0 2px 8px #0002}
+.rail-tools-toggle[aria-expanded="true"]{background:var(--accent-weak)}
+.rail-tools{top:0!important}
+@media(max-width:600px){#appearancePanel.compact-reading-panel{top:61px!important;right:6px!important;width:min(284px,calc(100vw - 12px))!important}body[data-view="document"] .toc-rail,body[data-view="document"][data-reading-mode="page"] .toc-rail{top:64px!important}}
+@media(max-height:550px){#appearancePanel.compact-reading-panel{max-height:calc(100dvh - 80px)!important;overflow-y:auto!important}}

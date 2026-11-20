@@ -143,6 +143,23 @@ function goBookmark(){
 
 /* v11 — bibliotecas temáticas, marcadores por trecho e operações locais. */
 const VIEW_IDS=['emptyState','document','libraryPage','librariesPage','marksPage','preferencesPage','maintenancePage'];
+function prepareSlimPanel(){
+ // O painel e a página Preferências compartilham os mesmos controles.
+ // Apenas no painel lateral os grupos ficam recolhíveis.
+ for(const group of els.appearance.querySelectorAll('.pref-group')){
+  if(group.parentElement?.classList.contains('slim-fold'))continue;
+  const heading=group.querySelector('h3');if(!heading)continue;
+  const details=document.createElement('details');details.className='slim-fold';
+  details.open=heading.textContent.trim()==='Temas';
+  const summary=document.createElement('summary');summary.textContent=heading.textContent;
+  group.parentNode.insertBefore(details,group);details.append(summary,group);
+ }
+}
+function resetSlimPanel(){
+ for(const details of [...els.appearance.querySelectorAll('.slim-fold')]){
+  const group=details.querySelector('.pref-group');if(group)details.replaceWith(group);
+ }
+}
 function ensureAppearanceFloating(){
  if(els.appearance.parentElement!==document.body)document.body.appendChild(els.appearance);
  els.appearance.classList.remove('preferences-embedded','compact-reading-panel');
@@ -271,18 +288,56 @@ async function dailyBackup(update=false){
  try{
   if(!db)throw Error('Banco de dados indisponível');
   const day=todayKey(),data=await backupPayload(),saved=await metaGet('daily-backup');
-  let handle=saved?.day===day?saved.handle:null;
-  if(update&&!saved?.day){toast('Nenhum backup diário registrado. Use Guardar primeiro.');return}
-  if(update&&saved?.day!==day){toast('Ainda não há backup de hoje. Use Guardar.');return}
-  if(!update&&saved?.day===day){toast('O backup de hoje já existe. Use Atualizar.');return}
-  if(handle){try{await writeBackupHandle(handle,data);await metaPut('daily-backup',{day,handle,updated:new Date().toISOString()});toast('Backup diário atualizado no mesmo arquivo.');return}catch(e){console.warn('Acesso ao arquivo diário não disponível:',e)}}
-  if('showSaveFilePicker'in window){
-   try{handle=await showSaveFilePicker({suggestedName:backupFilename(),types:[{description:'Backup JSON',accept:{'application/json':['.json']}}]});await writeBackupHandle(handle,data);await metaPut('daily-backup',{day,handle,updated:new Date().toISOString()});toast(update?'Backup salvo. Confirme o destino do arquivo.':'Backup diário guardado.');return}catch(e){if(e.name==='AbortError')return;console.warn(e)}
+  if(update&&(!saved||saved.day!==day)){
+   toast('Não há backup registrado hoje. Use Guardar para criar o arquivo.');return;
   }
-  downloadFile(backupFilename(),new Blob([data],{type:'application/json'}));await metaPut('daily-backup',{day,updated:new Date().toISOString(),download:true});toast(update?'Novo download gerado: substitua manualmente o arquivo anterior.':'Backup baixado. Guarde o arquivo em local seguro.');
+  if(!update&&saved?.day===day){toast('Já existe backup de hoje. Use Atualizar.');return}
+  let handle=saved?.day===day?saved.handle:null;
+  if(handle){
+   try{await writeBackupHandle(handle,data);await metaPut('daily-backup',{day,handle,updated:new Date().toISOString()});toast('Backup atualizado no arquivo original.');return}
+   catch(e){console.warn('Permissão do arquivo original indisponível:',e)}
+  }
+  if(update&&saved?.download){
+   // Downloads convencionais não fornecem um FileSystemFileHandle persistente.
+   // O navegador não permite localizar automaticamente o arquivo baixado.
+   if('showOpenFilePicker' in window){
+    const choose=confirm('O backup anterior foi baixado sem acesso permanente. Deseja selecionar o arquivo de hoje para atualizá-lo?\n\nCancelar gera um novo download, sem substituir o anterior.');
+    if(choose){
+     try{
+      const [picked]=await showOpenFilePicker({multiple:false,types:[{description:'Backup JSON',accept:{'application/json':['.json']}}]});
+      if(!picked)return;
+      if(picked.name!==backupFilename()){toast('Selecione o backup de hoje: '+backupFilename());return}
+      // Conferir conteúdo antes de sobrescrever, evitando apagar um arquivo estranho.
+      const existing=JSON.parse(await (await picked.getFile()).text());
+      if(existing.format!=='md-reader-backup'||!Array.isArray(existing.documents))throw Error('Arquivo não é backup MD Reader');
+      await writeBackupHandle(picked,data);
+      await metaPut('daily-backup',{day,handle:picked,updated:new Date().toISOString()});
+      toast('Backup de hoje atualizado no arquivo selecionado.');return;
+     }catch(e){if(e.name==='AbortError')return;console.error(e);toast('Não foi possível atualizar o arquivo selecionado.');return}
+    }
+   }else{
+    const ok=confirm('Este navegador não permite localizar ou sobrescrever automaticamente downloads. Deseja baixar uma cópia atualizada para substituir manualmente a anterior?');
+    if(!ok)return;
+   }
+   downloadFile(backupFilename(),new Blob([data],{type:'application/json'}));
+   await metaPut('daily-backup',{day,updated:new Date().toISOString(),download:true});
+   toast('Nova cópia baixada. Substitua manualmente o backup anterior.');return;
+  }
+  if('showSaveFilePicker' in window){
+   try{
+    handle=await showSaveFilePicker({suggestedName:backupFilename(),types:[{description:'Backup JSON',accept:{'application/json':['.json']}}]});
+    await writeBackupHandle(handle,data);
+    await metaPut('daily-backup',{day,handle,updated:new Date().toISOString()});
+    toast('Backup diário salvo.');return;
+   }catch(e){if(e.name==='AbortError')return;console.warn('Seletor de arquivo indisponível:',e)}
+  }
+  downloadFile(backupFilename(),new Blob([data],{type:'application/json'}));
+  await metaPut('daily-backup',{day,updated:new Date().toISOString(),download:true});
+  toast('Backup baixado. Para atualizar no mesmo arquivo, o navegador precisa permitir gravação.');
  }catch(e){console.error(e);toast('Não foi possível concluir o backup diário.')}
 }
 function showPreferences(){
+ resetSlimPanel();
  showCollection('preferencesPage','Preferências');
  const target=$('#preferencesControls');target.append(els.appearance);
  els.appearance.hidden=false;els.appearance.classList.add('preferences-embedded');
@@ -308,12 +363,12 @@ async function maintenanceAction(action){const out=$('#maintenanceOutput');const
  }}catch(e){console.error(e);say('Operação não concluída: '+e.message)}
 }
 
-function bind(){[['#openFileBtn',requestFile],['#openDrawerFile',requestFile],['#exampleBtn',()=>openContent('Exemplo do MD Reader.md',example,'example')],['#exampleDrawerBtn',()=>openContent('Exemplo do MD Reader.md',example,'example')],['#openUrlBtn',()=>$('#urlDialog').showModal()],['#urlDrawerBtn',()=>{closeDrawer();$('#urlDialog').showModal()}],['#menuBtn',()=>els.drawer.classList.contains('open')?closeDrawer():openDrawer()],['#closeDrawer',closeDrawer],['#drawerSearchBtn',()=>{closeDrawer();togglePanel('search')}],['#drawerFocusBtn',()=>focusMode(true)],['#aboutBtn',()=>{closeDrawer();$('#aboutDialog').showModal()}],['#closeAbout',()=>$('#aboutDialog').close()],['#searchBtn',()=>togglePanel('search')],['#appearanceBtn',()=>{if(activeView==='document'){ensureAppearanceFloating();$('#settingsTitle').hidden=false;els.appearance.classList.add('compact-reading-panel');togglePanel('appearance')}else showPreferences()}],['#settingsBtn',()=>{closeDrawer();if(activeView==='document'){ensureAppearanceFloating();$('#settingsTitle').hidden=false;els.appearance.classList.add('compact-reading-panel');els.search.hidden=true;els.appearance.hidden=false;$('#paletteSelect').focus()}else showPreferences()}],['#closeSearch',()=>els.search.hidden=true],['#closeAppearance',()=>els.appearance.hidden=true],['#prevMatch',()=>navigateMatch(matchIndex-1)],['#nextMatch',()=>navigateMatch(matchIndex+1)],['#focusBtn',()=>focusMode(!document.body.classList.contains('focus-mode'))],['#exitFocus',()=>focusMode(false)],['#favoriteBtn',()=>toggleFavorite(currentId)],['#themeQuickBtn',()=>{prefs.theme=prefs.theme==='dark'?'light':'dark';applyPrefs();savePrefs();syncQuickActions()}],['#fullscreenBtn',toggleFullscreen],['#backToTop',()=>prefs.readingMode==='page'?goPage(0):window.scrollTo({top:0,behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'instant':'smooth'})],['#readingModeBtn',()=>setReadingMode(prefs.readingMode==='page'?'scroll':'page')],['#bookmarkBtn',markSelection],['#drawerBookmarkBtn',()=>{closeDrawer();markSelection()}],['#drawerPageBtn',()=>{closeDrawer();setReadingMode(prefs.readingMode==='page'?'scroll':'page')}],['#goBookmark',goBookmark],['#prevPage',()=>goPage(pageIndex-1)],['#nextPage',()=>goPage(pageIndex+1)],['#libraryMenuBtn',openLibrary],['#librariesMenuBtn',showLibraries],['#newLibraryBtn',createLibrary],['#marksMenuBtn',showMarks],['#markFromPage',()=>{if(currentId)showDocument(records.find(r=>r.id===currentId));else toast('Abra um documento para marcar.')}],['#backupBtn',guardar],['#restoreBtn',()=>$('#backupInput').click()],['#refreshBtn',atualizar],['#saveCurrentFile',saveCurrentFile],['#openSystemFile',openSystemFile],['#copySelected',copySelected],['#libraryAdd',requestFile],['#clearHistory',clearHistory],['#printBtn',()=>{closeDrawer();if(!currentId){toast('Abra um documento para imprimir.');return}clearMatches();window.print()}],['#cancelUrl',()=>$('#urlDialog').close()]].forEach(([s,fn])=>{const el=$(s);if(el)el.addEventListener('click',fn);else console.warn('Controle ausente:',s)});$('#newLibraryMenu').onclick=createLibrary;
+function bind(){[['#openFileBtn',requestFile],['#openDrawerFile',requestFile],['#exampleBtn',()=>openContent('Exemplo do MD Reader.md',example,'example')],['#exampleDrawerBtn',()=>openContent('Exemplo do MD Reader.md',example,'example')],['#openUrlBtn',()=>$('#urlDialog').showModal()],['#urlDrawerBtn',()=>{closeDrawer();$('#urlDialog').showModal()}],['#menuBtn',()=>els.drawer.classList.contains('open')?closeDrawer():openDrawer()],['#closeDrawer',closeDrawer],['#drawerSearchBtn',()=>{closeDrawer();togglePanel('search')}],['#drawerFocusBtn',()=>focusMode(true)],['#aboutBtn',()=>{closeDrawer();$('#aboutDialog').showModal()}],['#closeAbout',()=>$('#aboutDialog').close()],['#searchBtn',()=>togglePanel('search')],['#appearanceBtn',()=>{if(activeView==='document'){ensureAppearanceFloating();$('#settingsTitle').hidden=false;els.appearance.classList.add('compact-reading-panel');prepareSlimPanel();togglePanel('appearance')}else showPreferences()}],['#settingsBtn',()=>{closeDrawer();if(activeView==='document'){ensureAppearanceFloating();$('#settingsTitle').hidden=false;els.appearance.classList.add('compact-reading-panel');prepareSlimPanel();els.search.hidden=true;els.appearance.hidden=false;$('#paletteSelect').focus()}else showPreferences()}],['#closeSearch',()=>els.search.hidden=true],['#closeAppearance',()=>els.appearance.hidden=true],['#prevMatch',()=>navigateMatch(matchIndex-1)],['#nextMatch',()=>navigateMatch(matchIndex+1)],['#focusBtn',()=>focusMode(!document.body.classList.contains('focus-mode'))],['#exitFocus',()=>focusMode(false)],['#favoriteBtn',()=>toggleFavorite(currentId)],['#themeQuickBtn',()=>{prefs.theme=prefs.theme==='dark'?'light':'dark';applyPrefs();savePrefs();syncQuickActions()}],['#fullscreenBtn',toggleFullscreen],['#backToTop',()=>prefs.readingMode==='page'?goPage(0):window.scrollTo({top:0,behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'instant':'smooth'})],['#readingModeBtn',()=>setReadingMode(prefs.readingMode==='page'?'scroll':'page')],['#bookmarkBtn',markSelection],['#drawerBookmarkBtn',()=>{closeDrawer();markSelection()}],['#drawerPageBtn',()=>{closeDrawer();setReadingMode(prefs.readingMode==='page'?'scroll':'page')}],['#goBookmark',goBookmark],['#prevPage',()=>goPage(pageIndex-1)],['#nextPage',()=>goPage(pageIndex+1)],['#libraryMenuBtn',openLibrary],['#librariesMenuBtn',showLibraries],['#newLibraryBtn',createLibrary],['#marksMenuBtn',showMarks],['#markFromPage',()=>{if(currentId)showDocument(records.find(r=>r.id===currentId));else toast('Abra um documento para marcar.')}],['#backupBtn',guardar],['#restoreBtn',()=>$('#backupInput').click()],['#refreshBtn',atualizar],['#saveCurrentFile',saveCurrentFile],['#openSystemFile',openSystemFile],['#copySelected',copySelected],['#libraryAdd',requestFile],['#clearHistory',clearHistory],['#printBtn',()=>{closeDrawer();if(!currentId){toast('Abra um documento para imprimir.');return}clearMatches();window.print()}],['#cancelUrl',()=>$('#urlDialog').close()]].forEach(([s,fn])=>{const el=$(s);if(el)el.addEventListener('click',fn);else console.warn('Controle ausente:',s)});$('#newLibraryMenu').onclick=createLibrary;
 $('#brandHome').onclick=showLibraries;
 $('#marksNavBtn').onclick=showMarks;
 const railToggle=$('#railToolsToggle'),railTools=$('#railTools');
 railToggle.onclick=()=>{railTools.hidden=!railTools.hidden;railToggle.setAttribute('aria-expanded',String(!railTools.hidden))};
-const railActions={search:()=>togglePanel('search'),favorite:()=>toggleFavorite(currentId),bookmark:markSelection,appearance:()=>{ensureAppearanceFloating();els.appearance.classList.add('compact-reading-panel');togglePanel('appearance')},mode:()=>setReadingMode(prefs.readingMode==='page'?'scroll':'page'),focus:()=>focusMode(true)};
+const railActions={search:()=>togglePanel('search'),favorite:()=>toggleFavorite(currentId),bookmark:markSelection,appearance:()=>{ensureAppearanceFloating();els.appearance.classList.add('compact-reading-panel');prepareSlimPanel();togglePanel('appearance')},mode:()=>setReadingMode(prefs.readingMode==='page'?'scroll':'page'),focus:()=>focusMode(true)};
 $$('[data-rail-action]').forEach(b=>b.onclick=()=>{railTools.hidden=true;railToggle.setAttribute('aria-expanded','false');railActions[b.dataset.railAction]?.()});
 $('#librariesQuickBtn').onclick=showLibraries;$('#backToLibraries').onclick=showLibraries;
 $('#preferencesMenu').onclick=showPreferences;
