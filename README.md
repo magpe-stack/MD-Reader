@@ -1,4 +1,4 @@
-# MD Reader v17
+# MD Reader v18
 
 Leitor Markdown PWA offline-first, sem login e sem backend.
 
@@ -50,3 +50,15 @@ Menu compacto, marca clicável, marcadores agrupados por biblioteca e documento,
 
 ## v17
 Painel de leitura slim com seções recolhíveis e botão circular lateral. Atualizar backup: reutiliza handle autorizado, permite selecionar explicitamente o arquivo baixado em navegadores compatíveis ou gera novo download quando não há permissão de sobrescrita.
+
+## v18 — Robustez offline e auditoria
+
+- Service Worker v18 com cache completo e versão isolada, sem ativação antes de completar a instalação.
+- Diagnóstico de armazenamento, bibliotecas, Service Worker e cache em Sistema → Manutenção.
+- Verificação offline agora consulta o cache correto da versão 18.
+- Restauração de documentos em transação única no IndexedDB e validação prévia dos registros.
+- Banco de dados informa quando outra aba impede atualização.
+
+**Atenção:** o Service Worker pode servir uma versão anterior até a nova versão assumir o controle. Atualize a página depois da instalação e confira em Manutenção. Limpar o cache exige conexão para reconstruí-lo. O navegador pode remover dados locais; mantenha backups externos.
+
+**Não incluídos:** sincronização em segundo plano, notificações push ou qualquer serviço remoto.
