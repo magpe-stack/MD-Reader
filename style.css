@@ -290,3 +290,16 @@ body[data-reading-mode="page"] #goBookmark{
  #splash::before,#splash .splash-stars,#splash .splash-glow{animation:none!important}
  #splash .splash-sparks{display:none!important}
 }
+
+/* v13: páginas de sistema */
+.preferences-controls{max-width:760px}
+.preferences-controls .floating-panel{position:static!important;display:block!important;max-width:none!important;width:100%!important;max-height:none!important;box-shadow:none!important;transform:none!important;inset:auto!important;border:1px solid var(--border);border-radius:16px;padding:22px;background:var(--surface)}
+.preferences-controls .floating-panel[hidden]{display:none!important}
+.maintenance-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:22px 0}
+.maintenance-grid button{min-height:80px;text-align:left;border:1px solid var(--border);border-radius:13px;background:var(--surface);color:var(--text);padding:16px;font:inherit;cursor:pointer}
+.maintenance-grid button:hover{border-color:var(--accent)}
+.maintenance-grid button:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+.maintenance-output{display:block;min-height:64px;border:1px solid var(--border);border-radius:13px;padding:18px;background:var(--surface);overflow-wrap:anywhere}
+.maintenance-note{color:var(--muted);line-height:1.6}
+@media(max-width:720px){.maintenance-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:420px){.maintenance-grid{grid-template-columns:1fr}}

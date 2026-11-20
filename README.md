@@ -1,4 +1,4 @@
-# MD Reader v12
+# MD Reader v13
 
 Leitor Markdown PWA offline-first, sem login e sem backend.
 
@@ -28,3 +28,11 @@ Envie todos os arquivos da raiz para o repositório GitHub Pages, sem criar subp
 
 ## v12
 Splash escuro cinematográfico com efeitos luminosos, preservando os temas de leitura e o suporte a movimento reduzido.
+
+## v13 — bibliotecas e manutenção
+
+O menu contém Bibliotecas (Criar, Abrir, Guardar, Atualizar, Restaurar), Sistema (Preferências, Manutenção) e Ajuda (Sobre, GitHub, Manual). O botão de bibliotecas está no topo.
+
+Guardar cria um backup por dia com nome MD-Reader-AAAA-MM-DD.json. Atualizar tenta sobrescrever o arquivo do dia via File System Access API, com permissão. Em navegadores sem essa API, é gerado outro download e o usuário deve substituir manualmente o arquivo anterior. O backup inclui preferências.
+
+Os dados continuam no IndexedDB e localStorage do navegador; não exclua dados do site para atualizar.
