@@ -1,4 +1,4 @@
-# MD Reader v15
+# MD Reader v16
 
 Leitor Markdown PWA offline-first, sem login e sem backend.
 
@@ -40,7 +40,10 @@ Os dados continuam no IndexedDB e localStorage do navegador; não exclua dados d
 ## v14
 Correção de páginas sobrepostas: navegação de tela única, controles de leitura contextuais, retorno às bibliotecas e splash com logotipo em primeiro plano.
 
-## v15
+## v16
 - Documento de exemplo criado uma única vez na Biblioteca Geral.
 - Preferências organizadas em quatro grupos semânticos.
 - Bandeja compacta de leitura acessível sem sair do documento.
+
+## v16
+Menu compacto, marca clicável, marcadores agrupados por biblioteca e documento, ferramentas de leitura junto à régua lateral.

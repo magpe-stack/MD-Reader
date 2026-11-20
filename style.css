@@ -364,3 +364,36 @@ body[data-view]:not([data-view="document"]) .library-page{margin-top:0!important
 .compact-reading-panel .palette-preview{margin:7px 0}
 @media(min-width:800px){.preferences-controls .floating-panel{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}.preferences-controls .pref-group{margin:0}}
 @media(max-width:600px){#appearancePanel.compact-reading-panel{top:64px;right:8px}}
+
+/* v16 — Menu compacto e régua com ferramentas contextuais */
+#drawer{width:min(272px,calc(100vw - 32px));top:10px;bottom:10px;left:8px;border-radius:18px;overflow:hidden;border:1px solid var(--line);box-shadow:0 16px 48px #0003;transform:translateX(calc(-100% - 18px))}
+#drawer.open{transform:translateX(0)}
+.drawer-head{padding:10px 12px;min-height:60px}
+.drawer-scroll{padding:10px 12px}
+.drawer-nav .menu-group summary{padding:12px 10px}
+.drawer-nav .menu-items button{min-height:42px}
+.drawer-markers{display:block;width:100%;min-height:48px;text-align:left;background:transparent;border:0;border-bottom:1px solid var(--line);border-radius:8px;padding:12px 13px;font-weight:700}
+.brand-home{display:inline-flex;align-items:center;gap:8px;background:transparent;border:0;padding:0;text-align:left;min-height:30px;font:inherit;color:var(--text)}
+.brand-home:hover{background:transparent;color:var(--accent)}
+.brand-home strong{font-size:15px}
+.toc-rail{flex-direction:column;justify-content:center;gap:10px;overflow:visible!important}
+.rail-tools-toggle{flex:none;width:34px;height:34px;min-width:34px;min-height:34px;padding:0;border:1px solid var(--line);border-radius:10px;background:var(--surface);color:var(--text);font-size:20px;box-shadow:0 3px 12px #0002}
+.rail-tools{position:absolute;right:calc(100% + 9px);top:0;display:flex;gap:4px;align-items:center;padding:7px;border:1px solid var(--line);border-radius:13px;background:var(--surface);box-shadow:var(--shadow);max-width:calc(100vw - 65px);z-index:25}
+.rail-tools[hidden]{display:none!important}
+.rail-tools button{flex:0 0 38px;width:38px;height:40px;padding:4px;border:0;background:transparent;border-radius:8px;font-size:20px}
+.rail-tools button:hover,.rail-tools button:focus-visible{background:var(--accent-weak)}
+.marks-document-group{border:1px solid var(--line);border-radius:16px;background:var(--surface);padding:18px;margin-bottom:20px;max-width:850px}
+.marks-document-group h2{font-size:1.15rem;margin:5px 0 16px;overflow-wrap:anywhere}
+.marks-breadcrumb{font-size:.82rem;color:var(--muted);margin:0;overflow-wrap:anywhere}
+.mark-row{display:flex;align-items:center;gap:10px;border-top:1px solid var(--line);padding:9px 0}
+.mark-jump{flex:1;min-width:0;text-align:left;background:transparent;border:0;padding:10px 7px;line-height:1.55;overflow-wrap:anywhere}
+.mark-jump:hover{color:var(--accent);text-decoration:underline}
+.mark-delete{flex:none;font-size:.82rem;min-height:42px}
+@media(max-width:600px){#drawer{width:min(265px,calc(100vw - 22px));left:5px}.rail-tools{flex-wrap:wrap;width:205px;justify-content:center}.rail-tools button{flex-basis:38px}.brand-home strong{font-size:13px}}
+@media print{.rail-tools,.rail-tools-toggle{display:none!important}}
+
+/* v16: ferramentas disponíveis mesmo sem títulos e no modo página */
+body[data-view="document"][data-reading-mode="page"] .toc-rail{display:flex!important;top:50%;z-index:24}
+body[data-reading-mode="page"] #toc{display:none!important}
+body[data-view="document"] .actions #searchBtn,body[data-view="document"] .actions #favoriteBtn,body[data-view="document"] .actions #readingModeBtn,body[data-view="document"] .actions #bookmarkBtn,body[data-view="document"] .actions #focusBtn,body[data-view="document"] .actions #appearanceBtn{display:none!important}
+body[data-view="document"] .toc-rail[hidden]{display:none!important}
