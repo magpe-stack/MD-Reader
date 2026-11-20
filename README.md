@@ -1,4 +1,4 @@
-# MD Reader v11
+# MD Reader v12
 
 Leitor Markdown PWA offline-first, sem login e sem backend.
 
@@ -25,3 +25,6 @@ A opção **Guardar** produz um arquivo JSON no dispositivo; não envia dados pa
 ## Publicação
 
 Envie todos os arquivos da raiz para o repositório GitHub Pages, sem criar subpastas. Não apague os dados do site para atualizar, pois isso apagaria a biblioteca local.
+
+## v12
+Splash escuro cinematográfico com efeitos luminosos, preservando os temas de leitura e o suporte a movimento reduzido.

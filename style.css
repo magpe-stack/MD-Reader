@@ -255,3 +255,38 @@ body[data-reading-mode="page"] #goBookmark{
 .inline-mark-symbol{display:inline-flex;align-items:center;justify-content:center;vertical-align:middle;border:0;background:transparent;font-size:1rem;line-height:1;padding:3px 5px;cursor:pointer}
 .inline-mark-symbol:focus-visible,.mark-card button:focus-visible,.library-tile button:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
 @media print{.inline-mark-symbol{display:none!important}}
+
+/* MD Reader v12 — splash noturno cinematográfico, independente do tema de leitura */
+#splash{
+ --splash-coral:#ff9475;
+ --splash-gold:#ffd38a;
+ --splash-blue:#7ed5ff;
+ --splash-glow:#ff8d77;
+ background:
+ radial-gradient(ellipse 45% 38% at 50% 43%,#5b2a38 0%,#261c31 42%,transparent 90%),
+ radial-gradient(ellipse 80% 85% at 50% 100%,#172e47 0%,transparent 70%),
+ linear-gradient(145deg,#070d19 0%,#10162a 55%,#090d19 100%)!important;
+ color:#fff3e9!important;
+}
+#splash::before{content:"";position:absolute;inset:0;pointer-events:none;
+ background:radial-gradient(circle at 18% 23%,#ffd38a20 0 1px,transparent 2px),
+ radial-gradient(circle at 77% 69%,#7ed5ff2b 0 1px,transparent 2px);
+ background-size:113px 131px,157px 173px;
+ animation:splashStars 4s ease-in-out both}
+#splash .splash-aura{background:radial-gradient(circle,#ff947550 0%,#ff94751b 32%,#7ed5ff12 55%,transparent 72%);filter:blur(12px)}
+#splash .splash-stars{opacity:.9;background-image:
+ radial-gradient(circle,#ffd38a 1px,transparent 2px),
+ radial-gradient(circle,#7ed5ff 1px,transparent 2px)}
+#splash .splash-glow{background:conic-gradient(from 0deg,transparent 0 17%,#ff947570 27%,transparent 39% 66%,#7ed5ff55 77%,transparent 89%);filter:blur(30px);opacity:.75}
+#splash .splash-emblem:before{border-color:var(--splash-gold);box-shadow:0 0 18px #ffd38a55,inset 0 0 14px #ff947533}
+#splash .splash-emblem:after{border-color:var(--splash-blue)}
+#splash .splash-emblem .brand-logo{filter:drop-shadow(0 0 16px #ff947577) drop-shadow(0 10px 18px #0008)}
+#splash strong{color:#fff6ed;text-shadow:0 0 24px #ff94754d}
+#splash small,#splash .splash-loading{color:#e8d6d3!important}
+#splash .splash-progress{background:#ffffff29;border:1px solid #ffffff20;box-shadow:0 0 16px #ff947522}
+#splash .splash-progress span{background:linear-gradient(90deg,#ff9475,#ffd38a,#7ed5ff);box-shadow:0 0 14px #ffd38a99}
+#splash .splash-sparks i{background:var(--splash-gold);box-shadow:0 0 9px var(--splash-gold)}
+@media(prefers-reduced-motion:reduce){
+ #splash::before,#splash .splash-stars,#splash .splash-glow{animation:none!important}
+ #splash .splash-sparks{display:none!important}
+}
