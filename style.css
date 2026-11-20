@@ -145,3 +145,100 @@ body.focus-mode[data-reading-mode="page"] #reader{height:100dvh;min-height:100dv
 @media(max-width:600px){body[data-reading-mode="page"] .topbar{transform:none!important}body[data-reading-mode="page"] #reader{padding:8px 10px 10px}body[data-reading-mode="page"] #document:not([hidden]){column-width:calc(100vw - 32px);column-gap:0}}
 @media(prefers-reduced-motion:reduce){.splash-aura,.splash-emblem,.splash-emblem:before,.splash-emblem:after,#splash strong,#splash small,.splash-progress span{animation:none!important}.splash-progress span{transform:none}}
 @media print{body[data-reading-mode="page"] #reader{height:auto!important;overflow:visible!important}body[data-reading-mode="page"] #document:not([hidden]){height:auto!important;max-width:none!important;overflow:visible!important;column-width:auto!important;column-count:1!important}.page-controls{display:none!important}}
+
+
+/* MD Reader v10: paginação alinhada ao viewport; nunca mostrar a coluna seguinte. */
+body[data-reading-mode="page"] #reader{
+ position:relative;
+ padding:12px clamp(52px,7vw,88px) 12px;
+ height:calc(100dvh - 66px);
+ min-height:0;
+ overflow:hidden;
+}
+body[data-reading-mode="page"] #document:not([hidden]){
+ box-sizing:content-box;
+ width:100%;
+ max-width:var(--reading-width);
+ height:calc(100% - 20px);
+ padding:0;
+ margin:0 auto;
+ overflow-x:hidden;
+ overflow-y:hidden;
+ column-width:var(--reading-width);
+ column-gap:0;
+ column-fill:auto;
+ scroll-behavior:auto;
+ overscroll-behavior:contain;
+}
+body[data-reading-mode="page"] #document > * {max-width:100%}
+body[data-reading-mode="page"] #document pre,body[data-reading-mode="page"] #document table{max-width:100%;overflow-x:auto}
+body[data-reading-mode="page"] .page-controls{
+ display:contents;
+}
+body[data-reading-mode="page"] .page-controls[hidden]{display:none!important}
+body[data-reading-mode="page"] #prevPage,
+body[data-reading-mode="page"] #nextPage{
+ position:absolute;top:50%;transform:translateY(-50%);
+ z-index:5;width:44px;height:66px;
+ padding:0;border:1px solid var(--line);
+ border-radius:13px;background:var(--surface);
+ color:var(--text);font-size:32px;
+ box-shadow:0 3px 15px #00000012;
+}
+body[data-reading-mode="page"] #prevPage{left:clamp(4px,1.6vw,24px)}
+body[data-reading-mode="page"] #nextPage{right:clamp(4px,1.6vw,24px)}
+body[data-reading-mode="page"] #prevPage:disabled,
+body[data-reading-mode="page"] #nextPage:disabled{opacity:.18}
+body[data-reading-mode="page"] #pageIndicator{
+ position:absolute;bottom:9px;left:50%;transform:translateX(-50%);
+ min-width:80px;text-align:center;color:var(--muted);font-size:12px;
+ font-variant-numeric:tabular-nums;
+}
+body[data-reading-mode="page"] #goBookmark{
+ position:absolute;right:clamp(4px,1.6vw,24px);bottom:5px;
+ min-width:44px;min-height:42px;
+}
+@media(max-width:600px){
+ body[data-reading-mode="page"] #reader{padding:12px 45px 10px}
+ body[data-reading-mode="page"] #prevPage,
+ body[data-reading-mode="page"] #nextPage{width:36px;height:60px;font-size:28px}
+}
+@media print{
+ body[data-reading-mode="page"] #document:not([hidden]){
+ width:auto!important;column-width:auto!important;overflow:visible!important;
+ }
+}
+/* Splash v10: partículas, brilho, respiração e trilha luminosa (4 s). */
+#splash{background:var(--bg);isolation:isolate}
+.splash-stars{position:absolute;inset:0;pointer-events:none;opacity:.5;
+ background-image:radial-gradient(circle,var(--accent) 1px,transparent 2px),
+ radial-gradient(circle,var(--accent) 1px,transparent 2px);
+ background-size:139px 149px,211px 191px;background-position:12px 18px,70px 110px;
+ mask-image:radial-gradient(ellipse 48% 50% at 50% 50%,#000,transparent);
+ animation:splashStars 4s ease-in-out both}
+.splash-glow{position:absolute;width:min(70vw,440px);aspect-ratio:1;
+ background:conic-gradient(from 0deg,transparent 0 22%,var(--accent-weak) 30%,transparent 43% 70%,var(--accent-weak) 80%,transparent 90%);
+ filter:blur(34px);opacity:.5;border-radius:50%;z-index:-1;
+ animation:splashSpin 4s linear infinite}
+#splash .splash-emblem{animation:splashRise .8s both,splashBreath 2.3s 1s ease-in-out infinite alternate}
+#splash .splash-emblem:before{border-width:1px;animation:splashOrbit 4s linear infinite,splashPulse 2s ease-in-out infinite alternate}
+#splash .splash-progress{height:4px;box-shadow:0 0 12px var(--accent-weak)}
+#splash .splash-progress span{box-shadow:0 0 12px var(--accent)}
+.splash-sparks{position:absolute;width:280px;height:280px;pointer-events:none}
+.splash-sparks i{position:absolute;left:50%;top:50%;width:4px;height:4px;border-radius:50%;
+ background:var(--accent);opacity:0;animation:splashSpark 3.5s ease-out infinite}
+.splash-sparks i:nth-child(1){--angle:0deg;animation-delay:.2s}
+.splash-sparks i:nth-child(2){--angle:60deg;animation-delay:.65s}
+.splash-sparks i:nth-child(3){--angle:120deg;animation-delay:1.1s}
+.splash-sparks i:nth-child(4){--angle:180deg;animation-delay:1.55s}
+.splash-sparks i:nth-child(5){--angle:240deg;animation-delay:2s}
+.splash-sparks i:nth-child(6){--angle:300deg;animation-delay:2.45s}
+@keyframes splashSpin{to{transform:rotate(360deg)}}
+@keyframes splashStars{0%{opacity:0;transform:scale(.92)}45%{opacity:.6}100%{opacity:.3;transform:scale(1.05)}}
+@keyframes splashBreath{to{transform:scale(1.06);filter:drop-shadow(0 0 14px var(--accent-weak))}}
+@keyframes splashPulse{to{opacity:.65;transform:scale(1.12)}}
+@keyframes splashSpark{0%{opacity:0;transform:rotate(var(--angle)) translateX(40px) scale(.3)}25%{opacity:.75}80%,100%{opacity:0;transform:rotate(var(--angle)) translateX(135px) scale(1)}}
+@media(prefers-reduced-motion:reduce){
+ .splash-stars,.splash-glow,.splash-sparks i,#splash .splash-emblem,#splash .splash-emblem:before{animation:none!important}
+ .splash-sparks{display:none}
+}
