@@ -326,55 +326,58 @@ async function writeBackupHandle(handle,data){const permission=await handle.quer
 async function dailyBackup(update=false){
  try{
   if(!db)throw Error('Banco de dados indisponível');
-  const day=todayKey(),data=await backupPayload(),saved=await metaGet('daily-backup');
-  if(update&&(!saved||saved.day!==day)){
-   toast('Não há backup registrado hoje. Use Guardar para criar o arquivo.');return;
-  }
-  if(!update&&saved?.day===day){toast('Já existe backup de hoje. Use Atualizar.');return}
-  let handle=saved?.day===day?saved.handle:null;
-  if(handle){
-   try{await writeBackupHandle(handle,data);await metaPut('daily-backup',{day,handle,updated:new Date().toISOString()});toast('Backup atualizado no arquivo original.');return}
-   catch(e){console.warn('Permissão do arquivo original indisponível:',e)}
-  }
-  if(update&&saved?.download){
-   // Downloads convencionais não fornecem um FileSystemFileHandle persistente.
-   // O navegador não permite localizar automaticamente o arquivo baixado.
-   if('showOpenFilePicker' in window){
-    const choose=confirm('O backup anterior foi baixado sem acesso permanente. Deseja selecionar o arquivo de hoje para atualizá-lo?\n\nCancelar gera um novo download, sem substituir o anterior.');
-    if(choose){
-     try{
-      const [picked]=await showOpenFilePicker({multiple:false,types:[{description:'Backup JSON',accept:{'application/json':['.json']}}]});
-      if(!picked)return;
-      if(picked.name!==backupFilename()){toast('Selecione o backup de hoje: '+backupFilename());return}
-      // Conferir conteúdo antes de sobrescrever, evitando apagar um arquivo estranho.
-      const existing=JSON.parse(await (await picked.getFile()).text());
-      if(existing.format!=='md-reader-backup'||!Array.isArray(existing.documents))throw Error('Arquivo não é backup MD Reader');
-      await writeBackupHandle(picked,data);
-      await metaPut('daily-backup',{day,handle:picked,updated:new Date().toISOString()});
-      toast('Backup de hoje atualizado no arquivo selecionado.');return;
-     }catch(e){if(e.name==='AbortError')return;console.error(e);toast('Não foi possível atualizar o arquivo selecionado.');return}
-    }
-   }else{
-    const ok=confirm('Este navegador não permite localizar ou sobrescrever automaticamente downloads. Deseja baixar uma cópia atualizada para substituir manualmente a anterior?');
-    if(!ok)return;
+  const day=todayKey(), filename=backupFilename(), data=await backupPayload();
+  const saved=await metaGet('daily-backup');
+  // Um arquivo que existe no disco não é automaticamente visível ao navegador.
+  // Nunca bloquear Atualizar só porque o registro local desapareceu.
+  if(update){
+   if(saved?.day===day&&saved.handle){
+    try{
+     await writeBackupHandle(saved.handle,data);
+     await metaPut('daily-backup',{day,handle:saved.handle,updated:new Date().toISOString()});
+     toast('Backup original atualizado.');return;
+    }catch(e){console.warn('Referência anterior indisponível:',e)}
    }
-   downloadFile(backupFilename(),new Blob([data],{type:'application/json'}));
+   if('showOpenFilePicker' in window){
+    try{
+     const [picked]=await showOpenFilePicker({multiple:false,types:[{description:'Backup JSON do MD Reader',accept:{'application/json':['.json']}}]});
+     if(!picked)return;
+     if(picked.name!==filename){toast('Selecione o arquivo '+filename+'. Nenhum arquivo foi alterado.');return}
+     const old=JSON.parse(await (await picked.getFile()).text());
+     if(old.format!=='md-reader-backup'||!Array.isArray(old.documents)||!Array.isArray(old.libraries)){
+      toast('O arquivo escolhido não é um backup válido do MD Reader.');return;
+     }
+     await writeBackupHandle(picked,data);
+     await metaPut('daily-backup',{day,handle:picked,updated:new Date().toISOString()});
+     toast('Backup atualizado no arquivo selecionado.');return;
+    }catch(e){
+     if(e.name==='AbortError')return;
+     console.error('Atualização de backup:',e);
+     toast('Não foi possível sobrescrever o arquivo. Verifique as permissões.');return;
+    }
+   }
+   if(!confirm('Este navegador não permite sobrescrever o backup diretamente. Baixar uma nova cópia para substituir manualmente o arquivo existente?'))return;
+   downloadFile(filename,new Blob([data],{type:'application/json'}));
    await metaPut('daily-backup',{day,updated:new Date().toISOString(),download:true});
-   toast('Nova cópia baixada. Substitua manualmente o backup anterior.');return;
+   toast('Cópia atualizada baixada. Substitua manualmente a anterior.');return;
+  }
+  if(saved?.day===day){
+   toast('Backup de hoje já registrado. Use Atualizar para escolher e sobrescrever o arquivo.');return;
   }
   if('showSaveFilePicker' in window){
    try{
-    handle=await showSaveFilePicker({suggestedName:backupFilename(),types:[{description:'Backup JSON',accept:{'application/json':['.json']}}]});
+    const handle=await showSaveFilePicker({suggestedName:filename,types:[{description:'Backup JSON do MD Reader',accept:{'application/json':['.json']}}]});
     await writeBackupHandle(handle,data);
     await metaPut('daily-backup',{day,handle,updated:new Date().toISOString()});
-    toast('Backup diário salvo.');return;
-   }catch(e){if(e.name==='AbortError')return;console.warn('Seletor de arquivo indisponível:',e)}
+    toast('Backup diário guardado.');return;
+   }catch(e){if(e.name==='AbortError')return;console.warn('Gravação direta indisponível:',e)}
   }
-  downloadFile(backupFilename(),new Blob([data],{type:'application/json'}));
+  downloadFile(filename,new Blob([data],{type:'application/json'}));
   await metaPut('daily-backup',{day,updated:new Date().toISOString(),download:true});
-  toast('Backup baixado. Para atualizar no mesmo arquivo, o navegador precisa permitir gravação.');
- }catch(e){console.error(e);toast('Não foi possível concluir o backup diário.')}
+  toast('Backup baixado. Para atualizar, selecione o arquivo ou substitua manualmente.');
+ }catch(e){console.error('Backup diário:',e);toast('Não foi possível concluir o backup: '+e.message)}
 }
+
 function showPreferences(){
  resetSlimPanel();
  showCollection('preferencesPage','Preferências');

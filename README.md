@@ -1,4 +1,4 @@
-# MD Reader v19
+# MD Reader v20
 
 Leitor Markdown PWA offline-first, sem login e sem backend.
 
@@ -73,3 +73,6 @@ Painel de leitura slim com seções recolhíveis e botão circular lateral. Atua
 - File Handling continua registrado no manifesto, dependendo de instalação e suporte do sistema.
 
 O MD Reader é um leitor, não um editor: **Salvar Markdown** exporta o conteúdo atualmente armazenado, sem modificar o arquivo original automaticamente.
+
+## v20 — Correção de Atualizar backup
+O botão Atualizar permite selecionar o backup diário existente mesmo quando a referência local não foi registrada ou foi perdida. Valida nome e estrutura antes de sobrescrever; exige permissão do navegador.
