@@ -431,3 +431,12 @@ body[data-view="document"] .toc-rail,body[data-view="document"][data-reading-mod
 .rail-tools{top:0!important}
 @media(max-width:600px){#appearancePanel.compact-reading-panel{top:61px!important;right:6px!important;width:min(284px,calc(100vw - 12px))!important}body[data-view="document"] .toc-rail,body[data-view="document"][data-reading-mode="page"] .toc-rail{top:64px!important}}
 @media(max-height:550px){#appearancePanel.compact-reading-panel{max-height:calc(100dvh - 80px)!important;overflow-y:auto!important}}
+
+/* v19 — ação Início, sem alterar a hierarquia dos demais grupos */
+.drawer-home{
+ display:block;width:100%;min-height:46px;padding:10px 15px;
+ text-align:left;font:inherit;font-weight:650;color:var(--text);
+ border:0;border-radius:11px;background:transparent;cursor:pointer;
+}
+.drawer-home:hover{background:var(--surface)}
+.drawer-home:focus-visible{outline:3px solid var(--accent);outline-offset:2px}

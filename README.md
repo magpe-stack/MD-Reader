@@ -1,4 +1,4 @@
-# MD Reader v18
+# MD Reader v19
 
 Leitor Markdown PWA offline-first, sem login e sem backend.
 
@@ -62,3 +62,14 @@ Painel de leitura slim com seções recolhíveis e botão circular lateral. Atua
 **Atenção:** o Service Worker pode servir uma versão anterior até a nova versão assumir o controle. Atualize a página depois da instalação e confira em Manutenção. Limpar o cache exige conexão para reconstruí-lo. O navegador pode remover dados locais; mantenha backups externos.
 
 **Não incluídos:** sincronização em segundo plano, notificações push ou qualquer serviço remoto.
+
+## v19 — Integração nativa e Início
+
+- **Início** é o primeiro botão do menu esquerdo, acima de Bibliotecas, e abre a tela de boas-vindas com opções de arquivo, URL, exemplo e leituras recentes.
+- **Arquivos** no menu: Abrir do dispositivo, Salvar Markdown, Copiar texto e Compartilhar.
+- A abertura usa File System Access API onde disponível, com seletor HTML como alternativa.
+- O salvamento usa seletor nativo de destino quando suportado, ou download do `.md`.
+- O compartilhamento usa Web Share API (arquivo quando permitido, ou texto); caso não exista, tenta copiar ou baixar.
+- File Handling continua registrado no manifesto, dependendo de instalação e suporte do sistema.
+
+O MD Reader é um leitor, não um editor: **Salvar Markdown** exporta o conteúdo atualmente armazenado, sem modificar o arquivo original automaticamente.

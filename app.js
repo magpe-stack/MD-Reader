@@ -289,7 +289,28 @@ async function saveCurrentFile(){
  const rec=records.find(r=>r.id===currentId);if(!rec){toast('Abra um documento primeiro.');return}
  try{if(window.showSaveFilePicker){const handle=await showSaveFilePicker({suggestedName:rec.name,types:[{description:'Markdown',accept:{'text/markdown':['.md']}}]});const w=await handle.createWritable();await w.write(rec.content);await w.close();toast('Arquivo salvo.')}else downloadFile(rec.name,new Blob([rec.content],{type:'text/markdown;charset=utf-8'}))}catch(e){if(e.name!=='AbortError'){console.error(e);toast('Não foi possível salvar o arquivo.')}}
 }
-async function copySelected(){const value=getSelection()?.toString()||records.find(r=>r.id===currentId)?.content||'';if(!value){toast('Não há texto para copiar.');return}try{await navigator.clipboard.writeText(value);toast('Texto copiado.')}catch{toast('Permissão de cópia indisponível.')}}
+async function copySelected(){const value=getSelection()?.toString()||records.find(r=>r.id===currentId)?.content||'';if(!value){toast('Não há texto para copiar.');return}try{if(!navigator.clipboard?.writeText)throw Error('Clipboard API indisponível');await navigator.clipboard.writeText(value);toast('Texto copiado.')}catch{toast('Cópia indisponível. Use a seleção e Ctrl+C.')}}
+async function shareCurrent(){
+ const rec=records.find(r=>r.id===currentId);
+ if(!rec){toast('Abra um texto para compartilhar.');return}
+ const selected=getSelection()?.toString().trim();
+ const title=rec.name;
+ try{
+  if(navigator.share){
+   const file=new File([rec.content],title.toLowerCase().endsWith('.md')?title:title+'.md',{type:'text/markdown'});
+   const data=navigator.canShare?.({files:[file]})?{title,files:[file]}:{title,text:selected||rec.content.slice(0,5000)};
+   await navigator.share(data);return;
+  }
+  if(navigator.clipboard?.writeText){await navigator.clipboard.writeText(selected||rec.content);toast('Compartilhamento indisponível. Texto copiado.');return}
+  downloadFile(title.endsWith('.md')?title:title+'.md',new Blob([rec.content],{type:'text/markdown;charset=utf-8'}));toast('Compartilhamento indisponível. Arquivo exportado.');
+ }catch(e){if(e.name!=='AbortError'){console.error(e);toast('Não foi possível compartilhar.');}}
+}
+function showHome(){
+ setView('emptyState','Início');
+ renderLists();closeDrawer();
+ window.scrollTo({top:0,behavior:'instant'});
+ $('#emptyState h1')?.focus?.({preventScroll:true});
+}
 function installFileHandling(){if('launchQueue'in window&&'setConsumer'in launchQueue){launchQueue.setConsumer(async launch=>{for(const handle of launch.files||[]){try{await handleFile(await handle.getFile())}catch(e){console.error(e);toast('Falha ao abrir arquivo recebido do sistema.')}}})}}
 
 
@@ -382,6 +403,11 @@ async function maintenanceAction(action){const out=$('#maintenanceOutput');const
 }
 
 function bind(){[['#openFileBtn',requestFile],['#openDrawerFile',requestFile],['#exampleBtn',()=>openContent('Exemplo do MD Reader.md',example,'example')],['#exampleDrawerBtn',()=>openContent('Exemplo do MD Reader.md',example,'example')],['#openUrlBtn',()=>$('#urlDialog').showModal()],['#urlDrawerBtn',()=>{closeDrawer();$('#urlDialog').showModal()}],['#menuBtn',()=>els.drawer.classList.contains('open')?closeDrawer():openDrawer()],['#closeDrawer',closeDrawer],['#drawerSearchBtn',()=>{closeDrawer();togglePanel('search')}],['#drawerFocusBtn',()=>focusMode(true)],['#aboutBtn',()=>{closeDrawer();$('#aboutDialog').showModal()}],['#closeAbout',()=>$('#aboutDialog').close()],['#searchBtn',()=>togglePanel('search')],['#appearanceBtn',()=>{if(activeView==='document'){ensureAppearanceFloating();$('#settingsTitle').hidden=false;els.appearance.classList.add('compact-reading-panel');prepareSlimPanel();togglePanel('appearance')}else showPreferences()}],['#settingsBtn',()=>{closeDrawer();if(activeView==='document'){ensureAppearanceFloating();$('#settingsTitle').hidden=false;els.appearance.classList.add('compact-reading-panel');prepareSlimPanel();els.search.hidden=true;els.appearance.hidden=false;$('#paletteSelect').focus()}else showPreferences()}],['#closeSearch',()=>els.search.hidden=true],['#closeAppearance',()=>els.appearance.hidden=true],['#prevMatch',()=>navigateMatch(matchIndex-1)],['#nextMatch',()=>navigateMatch(matchIndex+1)],['#focusBtn',()=>focusMode(!document.body.classList.contains('focus-mode'))],['#exitFocus',()=>focusMode(false)],['#favoriteBtn',()=>toggleFavorite(currentId)],['#themeQuickBtn',()=>{prefs.theme=prefs.theme==='dark'?'light':'dark';applyPrefs();savePrefs();syncQuickActions()}],['#fullscreenBtn',toggleFullscreen],['#backToTop',()=>prefs.readingMode==='page'?goPage(0):window.scrollTo({top:0,behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'instant':'smooth'})],['#readingModeBtn',()=>setReadingMode(prefs.readingMode==='page'?'scroll':'page')],['#bookmarkBtn',markSelection],['#drawerBookmarkBtn',()=>{closeDrawer();markSelection()}],['#drawerPageBtn',()=>{closeDrawer();setReadingMode(prefs.readingMode==='page'?'scroll':'page')}],['#goBookmark',goBookmark],['#prevPage',()=>goPage(pageIndex-1)],['#nextPage',()=>goPage(pageIndex+1)],['#libraryMenuBtn',openLibrary],['#librariesMenuBtn',showLibraries],['#newLibraryBtn',createLibrary],['#marksMenuBtn',showMarks],['#markFromPage',()=>{if(currentId)showDocument(records.find(r=>r.id===currentId));else toast('Abra um documento para marcar.')}],['#backupBtn',guardar],['#restoreBtn',()=>$('#backupInput').click()],['#refreshBtn',atualizar],['#saveCurrentFile',saveCurrentFile],['#openSystemFile',openSystemFile],['#copySelected',copySelected],['#libraryAdd',requestFile],['#clearHistory',clearHistory],['#printBtn',()=>{closeDrawer();if(!currentId){toast('Abra um documento para imprimir.');return}clearMatches();window.print()}],['#cancelUrl',()=>$('#urlDialog').close()]].forEach(([s,fn])=>{const el=$(s);if(el)el.addEventListener('click',fn);else console.warn('Controle ausente:',s)});$('#newLibraryMenu').onclick=createLibrary;
+$('#homeNavBtn').onclick=showHome;
+$('#systemOpenMenu').onclick=()=>{closeDrawer();openSystemFile()};
+$('#systemSaveMenu').onclick=()=>{closeDrawer();saveCurrentFile()};
+$('#copyMenu').onclick=()=>{closeDrawer();copySelected()};
+$('#shareMenu').onclick=()=>{closeDrawer();shareCurrent()};
 $('#brandHome').onclick=showLibraries;
 $('#marksNavBtn').onclick=showMarks;
 const railToggle=$('#railToolsToggle'),railTools=$('#railTools');
