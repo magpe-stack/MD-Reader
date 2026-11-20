@@ -115,3 +115,33 @@ body.focus-mode .toc-rail{display:none}
 .library-page button:focus-visible,.library-page input:focus-visible,.library-page select:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
 @media(max-width:520px){.library-heading{align-items:flex-start}.library-heading .primary{white-space:nowrap}.library-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:22px 14px}.library-page{padding:20px 16px 70px}.book-cover{padding:15px 12px}}
 @media print{.library-page{display:none!important}}
+
+/* MD Reader v7 — paginação e marcador */
+body[data-reading-mode="page"] #reader{padding:12px 14px 12px;min-height:calc(100dvh - 66px);height:calc(100dvh - 66px);overflow:hidden}
+body[data-reading-mode="page"] #document:not([hidden]){height:calc(100% - 62px);max-width:min(var(--reading-width),100%);width:100%;padding:16px 6px 8px;margin:0 auto;overflow-x:auto;overflow-y:hidden;column-width:calc(min(var(--reading-width), 100vw - 40px) - 12px);column-gap:0;column-fill:auto;scrollbar-width:none;scroll-behavior:auto;overscroll-behavior-x:contain}
+body[data-reading-mode="page"] #document::-webkit-scrollbar{display:none}
+body[data-reading-mode="page"] .markdown h1,body[data-reading-mode="page"] .markdown h2,body[data-reading-mode="page"] .markdown h3{break-after:avoid-column}
+body[data-reading-mode="page"] .markdown pre,body[data-reading-mode="page"] .markdown blockquote{break-inside:avoid-column}
+.page-controls{max-width:500px;margin:9px auto 0;display:flex;align-items:center;justify-content:center;gap:14px;height:44px}
+.page-controls[hidden]{display:none!important}.page-controls button{min-width:44px;min-height:44px;padding:5px 12px}.page-controls span{font-variant-numeric:tabular-nums;font-size:13px;color:var(--muted);min-width:70px;text-align:center}
+body[data-reading-mode="page"] .toc-rail,body[data-reading-mode="page"] #backToTop{display:none!important}
+body.focus-mode[data-reading-mode="page"] #reader{height:100dvh;min-height:100dvh}
+/* Splash: marca original, luz suave, anéis e progresso; sem bibliotecas */
+#splash{overflow:hidden;isolation:isolate;gap:13px;background:var(--bg)}
+.splash-aura{position:absolute;width:min(80vw,500px);aspect-ratio:1;border-radius:50%;background:radial-gradient(circle,var(--accent-weak),transparent 68%);animation:splashAura 3s ease-in-out infinite alternate;z-index:-1}
+.splash-emblem{position:relative;width:130px;height:130px;display:grid;place-items:center;animation:splashRise .8s both}
+.splash-emblem:before,.splash-emblem:after{content:'';position:absolute;inset:-9px;border:1px solid var(--accent);border-radius:50%;opacity:.35;animation:splashOrbit 4s linear infinite}
+.splash-emblem:after{inset:-20px;border-style:dashed;opacity:.15;animation-direction:reverse;animation-duration:7s}
+#splash .splash-emblem .brand-logo{width:98px;height:98px;filter:drop-shadow(0 8px 14px #0002)}
+#splash strong{font-size:clamp(30px,6vw,44px);letter-spacing:-.035em;animation:splashRise 1s .2s both}
+#splash small{font-size:14px;animation:splashRise 1s .4s both}
+.splash-progress{width:min(230px,65vw);height:3px;border-radius:99px;background:var(--line);overflow:hidden;margin-top:24px}
+.splash-progress span{display:block;width:100%;height:100%;background:var(--accent);transform-origin:left;animation:splashLoad 3.7s ease-in-out both}
+.splash-loading{font-size:11px;color:var(--muted);letter-spacing:.08em}
+@keyframes splashRise{from{opacity:0;transform:translateY(18px) scale(.96)}to{opacity:1;transform:none}}
+@keyframes splashOrbit{to{transform:rotate(360deg)}}
+@keyframes splashAura{to{transform:scale(1.18);opacity:.65}}
+@keyframes splashLoad{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+@media(max-width:600px){body[data-reading-mode="page"] .topbar{transform:none!important}body[data-reading-mode="page"] #reader{padding:8px 10px 10px}body[data-reading-mode="page"] #document:not([hidden]){column-width:calc(100vw - 32px);column-gap:0}}
+@media(prefers-reduced-motion:reduce){.splash-aura,.splash-emblem,.splash-emblem:before,.splash-emblem:after,#splash strong,#splash small,.splash-progress span{animation:none!important}.splash-progress span{transform:none}}
+@media print{body[data-reading-mode="page"] #reader{height:auto!important;overflow:visible!important}body[data-reading-mode="page"] #document:not([hidden]){height:auto!important;max-width:none!important;overflow:visible!important;column-width:auto!important;column-count:1!important}.page-controls{display:none!important}}
