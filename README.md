@@ -1,4 +1,4 @@
-# MD Reader v13
+# MD Reader v14
 
 Leitor Markdown PWA offline-first, sem login e sem backend.
 
@@ -36,3 +36,6 @@ O menu contém Bibliotecas (Criar, Abrir, Guardar, Atualizar, Restaurar), Sistem
 Guardar cria um backup por dia com nome MD-Reader-AAAA-MM-DD.json. Atualizar tenta sobrescrever o arquivo do dia via File System Access API, com permissão. Em navegadores sem essa API, é gerado outro download e o usuário deve substituir manualmente o arquivo anterior. O backup inclui preferências.
 
 Os dados continuam no IndexedDB e localStorage do navegador; não exclua dados do site para atualizar.
+
+## v14
+Correção de páginas sobrepostas: navegação de tela única, controles de leitura contextuais, retorno às bibliotecas e splash com logotipo em primeiro plano.

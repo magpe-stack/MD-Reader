@@ -303,3 +303,43 @@ body[data-reading-mode="page"] #goBookmark{
 .maintenance-note{color:var(--muted);line-height:1.6}
 @media(max-width:720px){.maintenance-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:420px){.maintenance-grid{grid-template-columns:1fr}}
+
+/* v14: uma única página visível, independentemente do tema e do modo página */
+#reader > [hidden],#emptyState[hidden],#document[hidden],#pageControls[hidden],
+#libraryPage[hidden],#librariesPage[hidden],#marksPage[hidden],
+#preferencesPage[hidden],#maintenancePage[hidden],
+.actions .iconbtn[hidden]{display:none!important}
+body[data-view]:not([data-view="document"]) #reader{
+ height:auto!important;min-height:calc(100dvh - 66px)!important;
+ overflow:visible!important;padding:0 18px 90px!important;
+}
+body[data-view]:not([data-view="document"]) .toc-rail,
+body[data-view]:not([data-view="document"]) #pageControls{display:none!important}
+body[data-view]:not([data-view="document"]) .library-page{margin-top:0!important;padding-top:clamp(22px,4vw,48px)}
+.back-libraries{display:inline-flex;align-items:center;min-height:44px;
+ margin:0 0 15px;padding:8px 12px;background:var(--surface);color:var(--text);
+ border:1px solid var(--line);border-radius:10px;font-weight:600}
+.back-libraries:focus-visible{outline:3px solid var(--focus-ring);outline-offset:3px}
+/* Splash v14: logo na frente, auréola radiante e estrela atravessada pela luz */
+#splash{isolation:isolate}
+#splash .splash-aura,#splash .splash-stars,#splash .splash-glow,
+#splash .splash-sparks{z-index:0;pointer-events:none}
+#splash .splash-emblem{z-index:4;isolation:isolate;overflow:visible}
+#splash .splash-emblem .brand-logo{position:relative;z-index:5;
+ filter:drop-shadow(0 0 9px #ffd9aa) drop-shadow(0 0 24px #ff9679)
+ drop-shadow(0 9px 22px #000b)!important}
+#splash .splash-beams{position:absolute;z-index:1;inset:-85px;border-radius:50%;
+ background:repeating-conic-gradient(from 4deg,transparent 0deg 12deg,#ffd38a7a 13deg 14deg,transparent 15deg 30deg);
+ -webkit-mask-image:radial-gradient(circle,transparent 0 20%,#000 36%,transparent 71%);
+ mask-image:radial-gradient(circle,transparent 0 20%,#000 36%,transparent 71%);
+ filter:blur(2px);animation:mdBeams 8s linear infinite}
+#splash .splash-star-light{position:absolute;z-index:3;left:50%;top:46%;
+ width:43px;height:43px;transform:translate(-50%,-50%);
+ clip-path:polygon(50% 0%,62% 34%,98% 35%,70% 57%,80% 93%,50% 72%,20% 93%,30% 57%,2% 35%,38% 34%);
+ background:#fff9df;filter:drop-shadow(0 0 18px #fff2a3);
+ animation:mdStarLight 4s ease-in-out both}
+#splash .splash-emblem::before,#splash .splash-emblem::after{z-index:2}
+#splash strong,#splash small,#splash .splash-progress,#splash .splash-loading{position:relative;z-index:4}
+@keyframes mdBeams{to{transform:rotate(360deg)}}
+@keyframes mdStarLight{0%{opacity:0;scale:.5}30%{opacity:.75;scale:1}78%{opacity:1;scale:1.1}100%{opacity:1;scale:1.55}}
+@media(prefers-reduced-motion:reduce){#splash .splash-beams,#splash .splash-star-light{animation:none!important}}
