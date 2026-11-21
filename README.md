@@ -251,3 +251,29 @@ No Modo Página, o controle de navegação inferior foi substituído por uma peq
 - Diagnóstico e Service Worker atualizados para v39.
 
 **Teste manual recomendado:** navegar apenas com Tab/Shift+Tab e Esc; testar grupos fechados e abertos, leitor no celular, temas claro/escuro, modo página e documentos com tabelas longas. Verificações de sintaxe não substituem testes em navegador.
+
+
+## MD Reader v40 — Candidata à estabilidade
+
+A v40 consolida as melhorias das versões anteriores sem introduzir novos controles de leitura.
+
+### Proteção adicional dos backups
+
+- A verificação de JSON exige a estrutura esperada de bibliotecas e documentos antes de considerar o arquivo um backup válido.
+- A tentativa de gravar sobre um arquivo vazio solicita confirmação explícita.
+- Se a referência anterior do arquivo não puder ser reutilizada, o aplicativo avisa e solicita a escolha do arquivo correto.
+- **Guardar** cria o backup do dia; **Atualizar** reutiliza o arquivo quando houver autorização ou solicita **Salvar como** para substituição.
+- **Restaurar** deve ser testado inicialmente com um backup de teste; nunca descarte a cópia original antes de verificar o resultado.
+
+### Checklist de aceitação da versão estável
+
+1. **Bibliotecas:** criar duas bibliotecas, adicionar documentos diferentes, alternar entre elas e reiniciar o app. Confirmar isolamento e persistência.
+2. **Leitura:** alternar rolagem/página, redimensionar a janela e conferir a pílula de numeração e a posição recuperada.
+3. **Marcadores:** marcar trechos, navegar até eles e confirmar sua persistência após reabrir o navegador.
+4. **Backups:** Guardar, modificar conteúdo, Atualizar e verificar o JSON sem restaurar. Testar a restauração apenas com dados de teste.
+5. **Compartilhar:** enviar arquivo inteiro e trecho selecionado em dispositivo compatível; verificar alternativas no desktop.
+6. **Manutenção:** verificar versão, cache offline, integridade das bibliotecas, backup JSON, armazenamento e integração nativa.
+7. **Acessibilidade:** testar Tab, Shift+Tab, Esc, setas, Home/End e os controles em modo claro/escuro.
+8. **Offline:** instalar e abrir o aplicativo sem rede, usando documentos já armazenados localmente.
+
+**Estado:** candidata à versão estável, pendente de testes funcionais reais no Edge e no Android. Verificações de sintaxe e de integridade do pacote não garantem funcionamento completo.
