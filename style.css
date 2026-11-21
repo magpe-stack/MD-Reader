@@ -522,3 +522,19 @@ body[data-reading-mode="page"] .page-seek-panel[hidden]{display:none!important}
 body[data-reading-mode="page"] .page-seek-panel #pageSeek{display:block;width:100%;margin:0;accent-color:var(--accent)}
 @media(max-width:600px){body[data-reading-mode="page"] .page-progress{width:auto;max-width:none;gap:0;padding:0}body[data-reading-mode="page"] .page-pill{min-width:73px;min-height:32px;padding:4px 12px;font-size:13px}body[data-reading-mode="page"] #pageIndicator{font-size:inherit;min-width:0}}
 @media print{body[data-reading-mode="page"] .page-progress{display:none!important}}
+
+/* v37 — menu compacto sem perda de área de toque; pílula única em todas as telas */
+#drawer .drawer-nav{padding:5px 10px 10px!important}
+#drawer .drawer-head{min-height:48px;padding:6px 12px}
+#drawer .menu-group>summary{min-height:38px;padding:7px 10px;font-size:15px}
+#drawer .menu-items{padding:2px 0 5px 10px;gap:0}
+#drawer .menu-items>button{min-height:36px;padding:6px 12px;font-size:15px;line-height:1.2}
+#drawer .drawer-markers{min-height:38px;padding:7px 10px;font-size:15px}
+#drawer .drawer-home{min-height:36px;padding:5px 10px}
+#drawer .menu-group{margin:0}
+#drawer .drawer-scroll{padding:6px 8px}
+/* Elimina a moldura externa que permanecia no desktop: só a pílula é visível. */
+body[data-reading-mode="page"] .page-controls{display:contents!important}
+body[data-reading-mode="page"] .page-progress{position:absolute!important;left:50%!important;bottom:8px!important;transform:translateX(-50%)!important;display:block!important;width:max-content!important;min-width:0!important;max-width:none!important;height:auto!important;margin:0!important;padding:0!important;border:0!important;border-radius:0!important;background:transparent!important;box-shadow:none!important;overflow:visible!important}
+body[data-reading-mode="page"] .page-progress>.page-pill{display:inline-flex!important;width:auto!important;min-width:74px!important;min-height:34px!important;margin:0!important;padding:5px 13px!important;border:2px solid var(--accent)!important;border-radius:999px!important;background:var(--surface)!important;color:var(--text)!important;box-shadow:0 2px 8px #00000012!important;font-size:13px!important;line-height:1!important}
+body[data-reading-mode="page"] .page-progress #pageIndicator{position:static!important;display:inline!important;transform:none!important;margin:0!important;padding:0!important;min-width:0!important;width:auto!important;font-size:inherit!important;color:inherit!important}

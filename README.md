@@ -213,3 +213,11 @@ Em **Ajuda → Atalhos**, consulte os comandos reais de abertura, busca, pagina�
 ## Novidades da v36 — Indicador compacto de páginas
 
 No Modo Página, o controle de navegação inferior foi substituído por uma pequena pílula `página atual | total de páginas`, nas cores do tema ativo. O primeiro número muda conforme a navegação e o segundo representa o total calculado. Clique ou toque na pílula para abrir o seletor de páginas; clique fora ou pressione Escape para fechá-lo. Os botões laterais e os atalhos de teclado continuam funcionando.
+
+
+## Novidades da v37 — Menu compacto e pílula sem moldura
+
+- Redução do espaçamento vertical entre os itens e grupos do menu lateral para diminuir a necessidade de rolagem.
+- Paginação em uma única pílula, sem caixa externa no desktop, com cores vinculadas ao tema.
+- Mantido o seletor de página ao tocar na pílula, bem como os controles de teclado.
+- Diagnóstico e cache offline atualizados para v37.
