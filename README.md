@@ -90,3 +90,7 @@ Em **Sistema → Manutenção → Instalar**, o aplicativo identifica quando est
 Os atalhos usam parâmetros `?view=libraries`, `?view=open` e `?view=marks`, com caminhos relativos adequados ao GitHub Pages.
 
 As bibliotecas e preferências existentes não são apagadas na atualização. Faça backup antes de publicar.
+
+## v23 — Correção do filtro do backup
+
+O comando Bibliotecas → Atualizar agora mostra todos os arquivos no seletor do Windows, independentemente da associação de arquivos `.json`. Após a seleção, valida o nome diário e a estrutura do backup antes de sobrescrever. O botão Guardar e os dados locais não são alterados.
