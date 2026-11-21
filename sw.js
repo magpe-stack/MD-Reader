@@ -1,7 +1,7 @@
-/* MD Reader v40 — recursos estáticos versionados e atualização segura. */
-const CACHE='md-reader-static-v40';
-const CORE='md-reader-core-v40';
-const ASSETS=["./", "./index.html", "./style.css", "./app.js", "./manifest.json", "./icon.svg", "./favicon-16.png", "./favicon-32.png", "./apple-touch-icon.png", "./icon-192.png", "./icon-512.png", "./marked.js", "./highlight.min.js"];
+/* MD Reader v41 — recursos estáticos versionados e atualização segura. */
+const CACHE='md-reader-static-v41';
+const CORE='md-reader-core-v41';
+const ASSETS=["./", "./index.html", "./style.css", "./app.js", "./manifest.json", "./icon.svg", "./favicon-16.png", "./favicon-32.png", "./apple-touch-icon.png", "./icon-192.png", "./icon-512.png", "./marked.js", "./highlight.min.js", "./manual.md"];
 const scope=new URL(self.registration.scope);
 self.addEventListener('install',event=>event.waitUntil((async()=>{
  const cache=await caches.open(CORE);
@@ -31,6 +31,6 @@ self.addEventListener('fetch',event=>{
 });
 self.addEventListener('message',event=>{
  if(event.data?.type==='MD_READER_CACHE_STATUS'){
-  event.waitUntil((async()=>{const c=await caches.open(CORE);const missing=[];for(const a of ASSETS){if(!await c.match(new URL(a,scope).href))missing.push(a)}event.source?.postMessage({type:'MD_READER_CACHE_STATUS',version:40,missing})})());
+  event.waitUntil((async()=>{const c=await caches.open(CORE);const missing=[];for(const a of ASSETS){if(!await c.match(new URL(a,scope).href))missing.push(a)}event.source?.postMessage({type:'MD_READER_CACHE_STATUS',version:41,missing})})());
  }
 });
