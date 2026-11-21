@@ -94,3 +94,6 @@ As bibliotecas e preferências existentes não são apagadas na atualização. F
 ## v23 — Correção do filtro do backup
 
 O comando Bibliotecas → Atualizar agora mostra todos os arquivos no seletor do Windows, independentemente da associação de arquivos `.json`. Após a seleção, valida o nome diário e a estrutura do backup antes de sobrescrever. O botão Guardar e os dados locais não são alterados.
+
+## v24 — Atualizar backup
+O botão Atualizar utiliza o diálogo **Salvar como**, não **Abrir**. Selecione o backup diário já existente e confirme sua substituição. O aplicativo valida o JSON existente antes de gravar.

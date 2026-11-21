@@ -338,22 +338,32 @@ async function dailyBackup(update=false){
      toast('Backup original atualizado.');return;
     }catch(e){console.warn('Referência anterior indisponível:',e)}
    }
-   if('showOpenFilePicker' in window){
+   // Atualizar é uma operação de gravação: usar SALVAR COMO, não ABRIR.
+   // O Windows permite selecionar o arquivo existente e confirmar a substituição.
+   if('showSaveFilePicker' in window){
     try{
-     const [picked]=await showOpenFilePicker({multiple:false,excludeAcceptAllOption:false});
+     const picked=await showSaveFilePicker({suggestedName:filename,types:[{description:'Backup JSON do MD Reader',accept:{'application/json':['.json']}}],excludeAcceptAllOption:false});
      if(!picked)return;
-     if(picked.name.toLowerCase()!==filename.toLowerCase()){toast('Selecione o backup de hoje: '+filename+'. Nenhum arquivo foi alterado.');return}
-     const old=JSON.parse(await (await picked.getFile()).text());
-     if(old.format!=='md-reader-backup'||!Array.isArray(old.documents)||!Array.isArray(old.libraries)){
-      toast('O arquivo escolhido não é um backup válido do MD Reader.');return;
+     if(picked.name.toLowerCase()!==filename.toLowerCase()){
+      toast('Escolha o arquivo de hoje: '+filename+'. Nenhum arquivo foi alterado.');return;
+     }
+     // Se o arquivo já existe, validar antes de sobrescrever.
+     // O diálogo do Windows também solicita confirmação de substituição.
+     const previous=await picked.getFile();
+     if(previous.size>0){
+      let old;
+      try{old=JSON.parse(await previous.text())}catch{toast('Arquivo existente não é JSON válido. Nenhum dado foi alterado.');return}
+      if(old.format!=='md-reader-backup'||!Array.isArray(old.documents)||!Array.isArray(old.libraries)){
+       toast('O arquivo existente não é um backup válido do MD Reader. Nenhum dado foi alterado.');return;
+      }
      }
      await writeBackupHandle(picked,data);
      await metaPut('daily-backup',{day,handle:picked,updated:new Date().toISOString()});
-     toast('Backup atualizado no arquivo selecionado.');return;
+     toast('Backup diário atualizado com sucesso.');return;
     }catch(e){
      if(e.name==='AbortError')return;
-     console.error('Atualização de backup:',e);
-     toast('Não foi possível sobrescrever o arquivo. Verifique as permissões.');return;
+     console.error('Atualização do backup:',e);
+     toast('Não foi possível gravar o backup. Confira as permissões.');return;
     }
    }
    if(!confirm('Este navegador não permite sobrescrever o backup diretamente. Baixar uma nova cópia para substituir manualmente o arquivo existente?'))return;
