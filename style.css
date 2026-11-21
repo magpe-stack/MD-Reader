@@ -511,3 +511,14 @@ body:not([data-reading-mode="page"]) .page-progress{display:none}
 .shortcut-card kbd{display:inline-block;padding:4px 8px;border:1px solid var(--line);border-bottom-width:2px;border-radius:7px;background:var(--bg);color:var(--text);font:600 .84rem ui-monospace,SFMono-Regular,Consolas,monospace;white-space:nowrap}
 .shortcuts-note{max-width:900px;line-height:1.6}
 @media(max-width:750px){.shortcuts-grid{grid-template-columns:1fr;gap:12px}.shortcut-card{padding:18px 20px}}
+
+/* v36 — indicador compacto em pílula; controle deslizante só quando solicitado */
+body[data-reading-mode="page"] .page-progress{position:absolute;left:50%;bottom:8px;transform:translateX(-50%);width:auto;max-width:none;min-width:0;padding:0;gap:0;border:0;background:transparent;box-shadow:none;z-index:7;overflow:visible}
+body[data-reading-mode="page"] .page-pill{display:flex;align-items:center;justify-content:center;min-width:82px;min-height:34px;padding:4px 15px;border:2px solid var(--accent);border-radius:999px;background:var(--surface);color:var(--text);font-size:14px;font-weight:750;line-height:1;font-variant-numeric:tabular-nums;white-space:nowrap;box-shadow:0 2px 9px #00000012;cursor:pointer}
+body[data-reading-mode="page"] .page-pill:hover,body[data-reading-mode="page"] .page-pill[aria-expanded="true"]{background:var(--accent-weak)}
+body[data-reading-mode="page"] #pageIndicator{position:static;transform:none;min-width:0;white-space:nowrap;color:inherit;font-size:inherit;font-weight:inherit;line-height:inherit}
+body[data-reading-mode="page"] .page-seek-panel{position:absolute;left:50%;bottom:calc(100% + 9px);transform:translateX(-50%);width:min(245px,calc(100vw - 45px));padding:13px 16px;border:1px solid var(--line);border-radius:15px;background:var(--surface);box-shadow:0 6px 22px #00000022}
+body[data-reading-mode="page"] .page-seek-panel[hidden]{display:none!important}
+body[data-reading-mode="page"] .page-seek-panel #pageSeek{display:block;width:100%;margin:0;accent-color:var(--accent)}
+@media(max-width:600px){body[data-reading-mode="page"] .page-progress{width:auto;max-width:none;gap:0;padding:0}body[data-reading-mode="page"] .page-pill{min-width:73px;min-height:32px;padding:4px 12px;font-size:13px}body[data-reading-mode="page"] #pageIndicator{font-size:inherit;min-width:0}}
+@media print{body[data-reading-mode="page"] .page-progress{display:none!important}}

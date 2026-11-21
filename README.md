@@ -208,3 +208,8 @@ Para publicar no GitHub Pages, envie **todos os arquivos do ZIP diretamente para
 ## Novidades da v35 — Atalhos
 
 Em **Ajuda → Atalhos**, consulte os comandos reais de abertura, busca, paginação e navegação acessível. **Ctrl + /** abre a página de atalhos; no macOS use **⌘ + /**. Os comandos de paginação dependem do Modo Página ativo.
+
+
+## Novidades da v36 — Indicador compacto de páginas
+
+No Modo Página, o controle de navegação inferior foi substituído por uma pequena pílula `página atual | total de páginas`, nas cores do tema ativo. O primeiro número muda conforme a navegação e o segundo representa o total calculado. Clique ou toque na pílula para abrir o seletor de páginas; clique fora ou pressione Escape para fechá-lo. Os botões laterais e os atalhos de teclado continuam funcionando.
