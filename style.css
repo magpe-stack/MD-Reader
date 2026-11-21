@@ -469,3 +469,15 @@ body[data-view="document"] .toc-rail,body[data-view="document"][data-reading-mod
  .topbar.hidden-on-scroll{transform:none}
  #reader{min-height:calc(100dvh - env(titlebar-area-height,32px))}
 }
+
+/* v28 — resultados de Manutenção no cartão que originou cada operação */
+.maintenance-grid button{display:flex;flex-direction:column;justify-content:center;align-items:stretch;gap:0;min-width:0;overflow-wrap:anywhere}
+.maintenance-grid button.maintenance-has-result{justify-content:flex-start}
+.maintenance-result{display:block;margin-top:14px;padding-top:13px;border-top:1px solid var(--line);font-size:.91rem;font-weight:400;line-height:1.55;color:var(--muted);white-space:normal;overflow-wrap:anywhere;user-select:text;cursor:text}
+.maintenance-hint{display:block;margin-top:10px;font-size:.88rem;line-height:1.5;font-weight:400;color:var(--muted)}
+/* v28 — sem clarão circular externo: apenas a estrela vazada do próprio logotipo brilha */
+#splash .splash-aperture-light{display:none!important}
+#splash .splash-cutout-star{position:absolute;left:50%;top:50%;width:36px;height:32px;transform:translate(-50%,-50%);z-index:4;pointer-events:none;clip-path:polygon(50% 0%,62% 34%,98% 35%,70% 57%,80% 93%,50% 72%,20% 93%,30% 57%,2% 35%,38% 34%);background:radial-gradient(circle,#fffefa 0%,#fff5c9 45%,#ffcf89 80%,#ffa36d 100%);filter:drop-shadow(0 0 5px #fff3be);opacity:0;animation:mdCutoutShine 4s ease-in-out both}
+#splash .splash-emblem .brand-logo{position:relative;z-index:5}
+@keyframes mdCutoutShine{0%,12%{opacity:0}28%{opacity:.4}46%{opacity:1}68%{opacity:.65}85%{opacity:1}100%{opacity:.8}}
+@media(prefers-reduced-motion:reduce){#splash .splash-cutout-star{animation:none!important;opacity:.85}}

@@ -127,3 +127,11 @@ O botão Atualizar utiliza o diálogo **Salvar como**, não **Abrir**. Selecione
 - Removida a estrela artificial atrás do logotipo na splash; clarão suave posicionado atrás do vazado original do SVG, preservando os demais efeitos.
 - Suporte progressivo a Window Controls Overlay no PWA instalado; fallback para janela padrão.
 - Novo diagnóstico da barra de título integrada em Manutenção.
+
+
+## v28 — Manutenção contextual e splash
+
+- Cada comando de Manutenção apresenta o resultado dentro do próprio cartão, sem painel de saída no rodapé.
+- A recomendação de backup aparece no cartão Proteção do armazenamento.
+- Removido o clarão circular adicionado na v27. A estrela vazada original do logotipo recebe brilho localizado, mantendo os demais efeitos.
+- Atualizado cache e diagnóstico para v28.
