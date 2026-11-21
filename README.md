@@ -1,149 +1,162 @@
-# MD Reader v20
+# MD Reader — Manual do Usuário
 
-Leitor Markdown PWA offline-first, sem login e sem backend.
+**Versão 30 · PWA Markdown · Português brasileiro**
 
-## Novidades
+O **MD Reader** é um aplicativo de leitura de arquivos Markdown (`.md`), com bibliotecas temáticas, marcadores, preferências de leitura e funcionamento offline após o carregamento dos recursos. É gratuito, não exige cadastro e guarda documentos e configurações no navegador do dispositivo. Não é um editor de Markdown nem um serviço de sincronização em nuvem.
 
-- **Leitura → Marcadores**: página com trechos selecionados, posições e botões para voltar ao documento.
-- **Marcar**: selecione uma palavra ou frase no texto e clique no ícone de marcador. Sem seleção, registra a posição.
-- **Biblioteca → Minhas Bibliotecas**: crie coleções temáticas. Cada livro pode ser movido pela lista suspensa em seu cartão.
-- **Biblioteca → Guardar**: exporta backup JSON com documentos, URLs carregadas, bibliotecas, favoritos, marcadores e preferências.
-- **Biblioteca → Restaurar**: importa backup JSON do MD Reader.
-- **Biblioteca → Atualizar**: recarrega a URL do documento atual. Arquivos locais devem ser selecionados novamente por restrições do navegador.
-- **Arquivo → Sistema**: tenta usar File System Access API; se indisponível, usa o seletor convencional.
-- **Arquivo → Salvar**: salva o conteúdo Markdown em arquivo, usando File System Access API quando disponível ou download.
-- **Arquivo → Copiar**: copia a seleção ou, se não houver seleção, o Markdown do documento.
+> **Antes de atualizar ou fazer manutenção:** crie e confira um backup externo. O IndexedDB e o armazenamento local pertencem ao navegador e podem ser perdidos se os dados do site forem apagados.
 
-## Compatibilidade e limites
+## Índice
 
-O manifesto registra associação a arquivos Markdown, mas a abertura direta pelo explorador depende do navegador e do sistema operacional (em geral PWAs instalados em Chromium desktop). Não é possível garantir duplo clique em todos os sistemas. As APIs de arquivos e área de transferência dependem de HTTPS, permissões e suporte do navegador.
+1. [Primeiro acesso](#primeiro-acesso)
+2. [Navegação e bibliotecas](#navegação-e-bibliotecas)
+3. [Abrir e ler documentos](#abrir-e-ler-documentos)
+4. [Marcadores e favoritos](#marcadores-e-favoritos)
+5. [Preferências](#preferências)
+6. [Guardar, Atualizar e Restaurar](#guardar-atualizar-e-restaurar)
+7. [Manutenção](#manutenção)
+8. [Instalação e integração com o sistema](#instalação-e-integração-com-o-sistema)
+9. [Atalhos e acessibilidade](#atalhos-e-acessibilidade)
+10. [Problemas comuns](#problemas-comuns)
+11. [Privacidade, limitações e publicação](#privacidade-limitações-e-publicação)
 
-Os marcadores usam deslocamentos no texto renderizado e são restaurados quando o conteúdo não mudou. Se o documento for editado ou atualizado, alguns marcadores podem deixar de corresponder exatamente ao trecho original. O texto citado continua no backup e na página Marcadores.
+## Primeiro acesso
 
-A opção **Guardar** produz um arquivo JSON no dispositivo; não envia dados para servidores. Mantenha cópias externas, pois o armazenamento do navegador pode ser apagado.
+Abra o MD Reader pelo endereço publicado no GitHub Pages. Na tela **Início**, você pode escolher **Abrir arquivo .md**, **Carregar URL pública** ou **Ler exemplo**. A opção **Continuar lendo** apresenta documentos recentes disponíveis neste navegador. O exemplo de boas-vindas é adicionado à biblioteca Geral quando o armazenamento está disponível.
 
-## Publicação
+O aplicativo usa **IndexedDB** para os documentos e parte dos metadados; bibliotecas e preferências também utilizam armazenamento local. Os dados não são compartilhados automaticamente entre dispositivos, navegadores ou perfis de usuário.
 
-Envie todos os arquivos da raiz para o repositório GitHub Pages, sem criar subpastas. Não apague os dados do site para atualizar, pois isso apagaria a biblioteca local.
+## Navegação e bibliotecas
 
-## v12
-Splash escuro cinematográfico com efeitos luminosos, preservando os temas de leitura e o suporte a movimento reduzido.
+Abra o menu lateral para acessar **Início**, **Bibliotecas**, **Marcadores**, **Sistema** e **Ajuda**. O grupo Bibliotecas contém os comandos **Criar**, **Abrir**, **Guardar**, **Atualizar** e **Restaurar**. Clicar no logotipo do cabeçalho leva à página **Minhas Bibliotecas**.
 
-## v13 — bibliotecas e manutenção
+Em **Bibliotecas → Criar**, dê um nome à nova coleção. **Bibliotecas → Abrir** exibe a biblioteca ativa. A página **Minhas Bibliotecas** permite selecionar uma coleção; os documentos são mostrados em cartões. Use **+ Adicionar** para importar outro Markdown. Há pesquisa, ordenação e filtros de favoritos e leituras em andamento. O seletor de biblioteca no cartão permite mover um documento para outra coleção.
 
-O menu contém Bibliotecas (Criar, Abrir, Guardar, Atualizar, Restaurar), Sistema (Preferências, Manutenção) e Ajuda (Sobre, GitHub, Manual). O botão de bibliotecas está no topo.
+Uma biblioteca com documentos não deve ser excluída antes que os arquivos sejam movidos ou excluídos. Excluir um documento do MD Reader remove a cópia armazenada no navegador, **não** o arquivo original que está no disco.
 
-Guardar cria um backup por dia com nome MD-Reader-AAAA-MM-DD.json. Atualizar tenta sobrescrever o arquivo do dia via File System Access API, com permissão. Em navegadores sem essa API, é gerado outro download e o usuário deve substituir manualmente o arquivo anterior. O backup inclui preferências.
+## Abrir e ler documentos
 
-Os dados continuam no IndexedDB e localStorage do navegador; não exclua dados do site para atualizar.
+Use **Abrir arquivo .md** ou arraste um arquivo Markdown para a área de importação. O aplicativo também aceita o carregamento por URL pública, sujeito às permissões de acesso e políticas de CORS do servidor. URLs privadas ou que exigem autenticação podem não funcionar.
 
-## v14
-Correção de páginas sobrepostas: navegação de tela única, controles de leitura contextuais, retorno às bibliotecas e splash com logotipo em primeiro plano.
+O conteúdo Markdown é renderizado para leitura, com títulos, listas, tabelas, tarefas, código e notas de rodapé. O sumário lateral permite navegar entre títulos; o conjunto de ferramentas próximo à régua oferece pesquisa, favorito, marcador, aparência, formato, foco, cópia, exportação e compartilhamento. O conteúdo Markdown é tratado como entrada não confiável e passa por sanitização antes da exibição.
 
-## v17
-- Documento de exemplo criado uma única vez na Biblioteca Geral.
-- Preferências organizadas em quatro grupos semânticos.
-- Bandeja compacta de leitura acessível sem sair do documento.
+**Modo Rolagem:** o documento é percorrido verticalmente. **Modo Página:** o conteúdo é dividido para navegação por páginas, com botões e gestos de deslizar. A posição de leitura é lembrada quando o armazenamento funciona corretamente. A divisão pode mudar ao alterar a fonte, a largura ou o tamanho da janela.
 
-## v17
-Menu compacto, marca clicável, marcadores agrupados por biblioteca e documento, ferramentas de leitura junto à régua lateral.
+**Salvar Markdown** exporta uma cópia do documento armazenado. Não edita o arquivo original no dispositivo. **Copiar** usa a seleção de texto quando houver; **Compartilhar** depende da API nativa do navegador, podendo oferecer alternativas.
 
-## v17
-Painel de leitura slim com seções recolhíveis e botão circular lateral. Atualizar backup: reutiliza handle autorizado, permite selecionar explicitamente o arquivo baixado em navegadores compatíveis ou gera novo download quando não há permissão de sobrescrita.
+## Marcadores e favoritos
 
-## v18 — Robustez offline e auditoria
+Para marcar um trecho, selecione uma palavra ou frase e use o comando **Marcar**. Sem seleção, o aplicativo registra a posição de leitura. A página **Marcadores** agrupa os registros por biblioteca e documento e oferece acesso ao local salvo. Marcas de trecho usam deslocamentos no texto renderizado; se o conteúdo for modificado, a posição pode não coincidir com o trecho original.
 
-- Service Worker v18 com cache completo e versão isolada, sem ativação antes de completar a instalação.
-- Diagnóstico de armazenamento, bibliotecas, Service Worker e cache em Sistema → Manutenção.
-- Verificação offline agora consulta o cache correto da versão 18.
-- Restauração de documentos em transação única no IndexedDB e validação prévia dos registros.
-- Banco de dados informa quando outra aba impede atualização.
+O comando **Favorito** identifica documentos para localização rápida. Favoritos não substituem backups.
 
-**Atenção:** o Service Worker pode servir uma versão anterior até a nova versão assumir o controle. Atualize a página depois da instalação e confira em Manutenção. Limpar o cache exige conexão para reconstruí-lo. O navegador pode remover dados locais; mantenha backups externos.
+## Preferências
 
-**Não incluídos:** sincronização em segundo plano, notificações push ou qualquer serviço remoto.
+Em **Sistema → Preferências**, ajuste:
 
-## v19 — Integração nativa e Início
+- **Temas:** paletas Original, Primavera, Verão, Outono e Inverno, com modos claro e escuro.
+- **Tipografia:** famílias sans-serif, serif, mono, transitional, slab, humanist e geometric.
+- **Dimensões de leitura:** tamanho da fonte, espaçamento entre linhas e largura da coluna.
+- **Formato de leitura:** Rolagem ou Página.
 
-- **Início** é o primeiro botão do menu esquerdo, acima de Bibliotecas, e abre a tela de boas-vindas com opções de arquivo, URL, exemplo e leituras recentes.
-- **Arquivos** no menu: Abrir do dispositivo, Salvar Markdown, Copiar texto e Compartilhar.
-- A abertura usa File System Access API onde disponível, com seletor HTML como alternativa.
-- O salvamento usa seletor nativo de destino quando suportado, ou download do `.md`.
-- O compartilhamento usa Web Share API (arquivo quando permitido, ou texto); caso não exista, tenta copiar ou baixar.
-- File Handling continua registrado no manifesto, dependendo de instalação e suporte do sistema.
+As preferências são lembradas no navegador. O painel compacto de aparência também pode ser aberto durante a leitura.
 
-O MD Reader é um leitor, não um editor: **Salvar Markdown** exporta o conteúdo atualmente armazenado, sem modificar o arquivo original automaticamente.
+## Guardar, Atualizar e Restaurar
 
-## v20 — Correção de Atualizar backup
-O botão Atualizar permite selecionar o backup diário existente mesmo quando a referência local não foi registrada ou foi perdida. Valida nome e estrutura antes de sobrescrever; exige permissão do navegador.
+Esses comandos são diferentes e **não devem ser confundidos**:
 
-## v21 — Menu simplificado
+### Guardar — criar backup
 
-Removida a seção Arquivos do menu lateral. Abrir Markdown continua na tela Início e no botão + Adicionar das bibliotecas. Copiar, Salvar Markdown e Compartilhar ficam nas ferramentas contextuais da leitura, acessíveis pelo botão acima da régua lateral. Nenhuma biblioteca ou documento é excluído pela atualização.
+Em **Bibliotecas → Guardar**, o aplicativo gera um JSON com bibliotecas, documentos, marcadores, favoritos e preferências. O nome diário segue o padrão `MD-Reader-AAAA-MM-DD.json`. Escolha uma pasta segura no dispositivo, como `GUARDAR`, e mantenha também uma cópia externa.
 
-## v22 — Instalação e atalhos do PWA
+### Atualizar — gravar o backup do dia
 
-O manifesto oferece atalhos para **Minhas Bibliotecas**, **Abrir Markdown** e **Marcadores**. A visibilidade dos atalhos depende do navegador e do sistema operacional.
+Em **Bibliotecas → Atualizar**, o aplicativo tenta atualizar o backup diário existente. Quando o navegador conserva uma referência de arquivo e permite a gravação, pode solicitar permissão. Se essa referência não estiver disponível, o navegador compatível abre **Salvar como**: escolha a pasta e o mesmo nome do arquivo diário e confirme a substituição quando o sistema solicitar.
 
-Em **Sistema → Manutenção → Instalar**, o aplicativo identifica quando está em modo instalado, oferece o prompt nativo quando disponível e mostra instruções quando não há prompt. O aplicativo não força a instalação.
+**Importante:** o aplicativo não consegue escolher silenciosamente uma pasta do Windows nem garantir que o navegador retenha permissões entre sessões. Em navegadores sem a API de gravação, pode ser necessário baixar uma nova cópia e substituir o backup manualmente. Verifique a data e o conteúdo do arquivo salvo.
 
-Os atalhos usam parâmetros `?view=libraries`, `?view=open` e `?view=marks`, com caminhos relativos adequados ao GitHub Pages.
+### Restaurar — importar backup
 
-As bibliotecas e preferências existentes não são apagadas na atualização. Faça backup antes de publicar.
+Em **Bibliotecas → Restaurar**, selecione um JSON de backup do MD Reader e confira a confirmação apresentada. A restauração pode substituir os dados locais atuais. Antes de restaurar, faça um backup do estado atual para poder voltar atrás.
 
-## v23 — Correção do filtro do backup
+### Verificar backup sem restaurar
 
-O comando Bibliotecas → Atualizar agora mostra todos os arquivos no seletor do Windows, independentemente da associação de arquivos `.json`. Após a seleção, valida o nome diário e a estrutura do backup antes de sobrescrever. O botão Guardar e os dados locais não são alterados.
+Em **Sistema → Manutenção → Verificar backup JSON**, selecione o arquivo para conferir seu formato e consistência estrutural **sem importar nem substituir** os dados do aplicativo. A verificação estrutural não é uma garantia criptográfica de integridade ou de recuperação completa: teste restaurações em ambiente separado quando os dados forem importantes.
 
-## v24 — Atualizar backup
-O botão Atualizar utiliza o diálogo **Salvar como**, não **Abrir**. Selecione o backup diário já existente e confirme sua substituição. O aplicativo valida o JSON existente antes de gravar.
+## Manutenção
 
+A página **Sistema → Manutenção** usa cartões; o resultado de cada ação aparece **dentro do respectivo cartão**. Os comandos são:
 
-## v25 — Backup diário confiável
+| Cartão | O que faz |
+| --- | --- |
+| Instalar aplicativo | Abre o convite nativo, quando disponível, ou apresenta instruções. |
+| Desinstalar — instruções | Explica como remover o PWA pelo navegador ou sistema. |
+| Verificar atualizações | Solicita ao Service Worker uma verificação de versão. |
+| Diagnóstico | Exibe informações sobre versão, HTTPS, IndexedDB, Service Worker, cache, persistência e documentos. |
+| Integração com Windows e Android | Verifica suporte a seletores de arquivo, compartilhamento e abertura pelo sistema. |
+| Barra de título integrada | Verifica a disponibilidade do Window Controls Overlay. |
+| Verificar disponibilidade offline | Confere recursos essenciais presentes no cache. |
+| Armazenamento | Exibe uso e cota aproximados, conforme o navegador. |
+| Proteção do armazenamento | Explica riscos de perda de dados locais. |
+| Solicitar persistência | Pede ao navegador proteção adicional contra remoção automática, quando suportada. |
+| Verificar bibliotecas | Audita IDs, nomes, conteúdo e vínculos, sem alterar registros. |
+| Verificar backup JSON | Examina um arquivo JSON sem restaurá-lo. |
+| Limpar cache do aplicativo | Exclui caches estáticos, **não** os documentos do IndexedDB; requer conexão para reconstrução. |
+| Reparar arquivos do aplicativo | Solicita novamente recursos essenciais para o cache, com conexão. |
+| Restaurar configurações padrão | Redefine preferências de leitura, mantendo bibliotecas e documentos. |
 
-- **Guardar** cria o backup JSON do dia, com todas as bibliotecas, textos, marcadores e preferências.
-- **Atualizar** tenta reutilizar a referência do arquivo salva no IndexedDB; se indisponível, abre **Salvar como** para escolher o arquivo do dia e confirmar a substituição.
-- Antes de sobrescrever, o app valida o JSON existente e seu nome. Um arquivo incompatível não é sobrescrito.
-- O acesso direto requer navegador compatível e permissão. Em navegadores sem File System Access, é gerado um download para substituição manual.
-- **Restaurar** mantém a confirmação e a importação transacional dos documentos.
+**Cuidado:** limpar o cache offline não equivale a limpar os dados do site. Nunca use a opção do navegador **Limpar dados do site** como método de atualização: isso pode apagar documentos, bibliotecas e permissões de arquivo.
 
-**Atenção:** o seletor Salvar como não encontra sozinho o diretório usado anteriormente. O usuário escolhe a pasta, se a permissão persistente não estiver disponível. Não limpe os dados do site.
+## Instalação e integração com o sistema
 
+O MD Reader é um PWA. No Edge ou Chrome compatível, procure **Instalar aplicativo** no navegador ou use o cartão correspondente em Manutenção. No Android, a instalação depende do navegador; no iPhone/iPad, use **Compartilhar → Adicionar à Tela de Início**, quando oferecido.
 
-## v26 — Integração nativa e manutenção
+O manifesto declara atalhos para **Minhas Bibliotecas**, **Abrir Markdown** e **Marcadores**, além de associação de arquivos Markdown em plataformas compatíveis. A presença dessas declarações não garante que o sistema operacional permita abrir `.md` com duplo clique. A **barra de título integrada** só funciona quando o aplicativo instalado e o navegador suportam Window Controls Overlay; caso contrário, a janela tradicional é preservada.
 
-- Diagnóstico **Integração com Windows e Android** na página Manutenção: instalação, abertura pelo sistema, seletores de arquivos e compartilhamento.
-- O tratamento de arquivos recebidos pelo sistema passa a ser registrado depois da abertura do IndexedDB, evitando disputa com a inicialização.
-- Corrigidas referências antigas ao cache v23 nas ações Verificar disponibilidade offline e Reparar arquivos do aplicativo: agora usam v26.
-- Mantidos os atalhos e a declaração de associação `.md` no manifesto; o registro dessa associação depende do navegador e do sistema.
-- Compartilhamento continua com API nativa e alternativas de cópia/download.
+## Atalhos e acessibilidade
 
-**Teste:** publicar via HTTPS, reinstalar ou atualizar o PWA se necessário, verificar Manutenção → Integração com Windows e Android, abrir um `.md` pelo sistema quando suportado, e executar as verificações offline.
+- `Ctrl+O` (ou `⌘+O`): abrir arquivo.
+- `Ctrl+F` (ou `⌘+F`): pesquisar no documento aberto.
+- **Modo Página:** setas esquerda/direita ou Page Up/Page Down, quando o foco não estiver em um controle interativo.
+- `Esc`: fechar menu ou painel, ou sair do modo foco, conforme o contexto.
+- `Tab` e `Shift+Tab`: navegar pelos controles. O menu lateral retém o foco enquanto está aberto.
 
+O aplicativo inclui rótulos acessíveis, indicação de foco, navegação por títulos, suporte a telas pequenas e regras de movimento reduzido. A presença desses recursos não constitui certificação formal WCAG 2.1; testes com leitores de tela e dispositivos reais continuam recomendados.
 
-## v27 — Manutenção e splash
+## Problemas comuns
 
-- Manutenção com cartões em duas colunas, como Preferências, e responsividade mobile.
-- Removida a estrela artificial atrás do logotipo na splash; clarão suave posicionado atrás do vazado original do SVG, preservando os demais efeitos.
-- Suporte progressivo a Window Controls Overlay no PWA instalado; fallback para janela padrão.
-- Novo diagnóstico da barra de título integrada em Manutenção.
+### Atualizar abre uma janela diferente da esperada
 
+O comando deve tentar gravar o arquivo diário; sem referência persistente, pode abrir **Salvar como**. Escolha a pasta `GUARDAR`, informe o nome existente e confirme a substituição. Se surgir uma janela **Abrir**, confirme que a versão publicada e o Service Worker são os atuais em **Manutenção → Diagnóstico**. Não sobrescreva outro JSON por engano.
 
-## v28 — Manutenção contextual e splash
+### Meu backup não aparece na pasta
 
-- Cada comando de Manutenção apresenta o resultado dentro do próprio cartão, sem painel de saída no rodapé.
-- A recomendação de backup aparece no cartão Proteção do armazenamento.
-- Removido o clarão circular adicionado na v27. A estrela vazada original do logotipo recebe brilho localizado, mantendo os demais efeitos.
-- Atualizado cache e diagnóstico para v28.
+Confira a pasta correta, a extensão `.json` e os filtros do seletor. O Windows pode associar `.json` a outro aplicativo, sem alterar o conteúdo do arquivo. Não renomeie para `.md`.
 
+### O aplicativo continua na versão antiga
 
-## v29 — Manutenção avançada e auditoria segura
+Com conexão ativa, abra **Manutenção → Verificar atualizações** e recarregue. Confira a versão no **Diagnóstico**. Em caso de falha persistente, faça backup e use **Reparar arquivos do aplicativo**. Evite limpar os dados do site.
 
-- Verificar bibliotecas: examina IDs repetidos, vínculos a bibliotecas inexistentes e registros incompletos, sem alterar os dados.
-- Verificar backup JSON: seletor exclusivo de verificação, separado do comando Restaurar; valida formato, limites, bibliotecas e documentos sem importar dados.
-- Armazenamento: uso, cota aproximada, percentual e estado de persistência.
-- Diagnóstico, verificação offline, reparação e Service Worker atualizados para v29.
-- Resultados permanecem dentro dos respectivos cartões de Manutenção.
-- Splash e demais funcionalidades preservados.
+### O documento não abre offline
 
-**Teste recomendado:** execute a auditoria das bibliotecas e verifique uma cópia de backup; confirme que o conteúdo não foi modificado. Teste o cache com a rede desligada após uma primeira abertura online.
+Abra o MD Reader online pelo menos uma vez para armazenar os recursos essenciais. Documentos já importados podem estar no IndexedDB; URLs remotas precisam de rede se ainda não foram importadas. Use **Verificar disponibilidade offline** e teste com a conexão desligada.
+
+### O navegador não permite instalar ou compartilhar
+
+A API pode não existir na plataforma, ou o aplicativo pode não estar instalado em contexto seguro. Utilize os comandos alternativos de abertura, cópia ou download. A associação nativa de arquivos é opcional.
+
+### A biblioteca está vazia após mudar de navegador
+
+Os dados não são sincronizados. Volte ao navegador/perfil original e exporte um backup; em seguida, restaure-o no novo ambiente.
+
+### Os marcadores apontam para outra posição
+
+Alterações no conteúdo, na tipografia ou na paginação podem mudar a localização. Consulte o trecho salvo na página Marcadores.
+
+## Privacidade, limitações e publicação
+
+O MD Reader não exige conta nem possui servidor próprio de documentos. A abertura de URLs públicas faz requisições à origem informada. O conteúdo importado é armazenado localmente e poderá ser perdido por limpeza de dados, troca de dispositivo, falha do navegador ou políticas de armazenamento.
+
+Para publicar no GitHub Pages, envie **todos os arquivos do ZIP diretamente para a raiz do repositório**: `index.html`, `style.css`, `app.js`, `manifest.json`, `sw.js`, bibliotecas JavaScript, ícones e este `README.md`. Não altere os nomes dos arquivos sem atualizar suas referências. Use HTTPS, recarregue após a publicação e confira **Sistema → Manutenção → Diagnóstico**.
+
+**Versão 30:** estabilização do diagnóstico de instalação, revisão de navegação por teclado, contenção de conteúdo largo, cache versionado e manual completo. Nenhuma atualização de versão substitui a necessidade de testar o backup e a restauração com dados de teste.

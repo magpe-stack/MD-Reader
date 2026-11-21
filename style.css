@@ -481,3 +481,12 @@ body[data-view="document"] .toc-rail,body[data-view="document"][data-reading-mod
 #splash .splash-emblem .brand-logo{position:relative;z-index:5}
 @keyframes mdCutoutShine{0%,12%{opacity:0}28%{opacity:.4}46%{opacity:1}68%{opacity:.65}85%{opacity:1}100%{opacity:.8}}
 @media(prefers-reduced-motion:reduce){#splash .splash-cutout-star{animation:none!important;opacity:.85}}
+
+/* v30 — foco, conteúdo longo e preferência por movimento reduzido */
+:where(button,a,input,select,textarea,summary,[role="button"]):focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+.library-page,.maintenance-grid,.maintenance-grid button,.maintenance-result,.markdown{min-width:0;overflow-wrap:anywhere}
+.maintenance-result{max-width:100%;line-break:auto}
+.markdown pre{max-width:100%;overflow-x:auto}
+.markdown table{display:block;max-width:100%;overflow-x:auto}
+@media(max-width:600px){.library-page{padding-inline:max(14px,env(safe-area-inset-left)) max(14px,env(safe-area-inset-right))}.maintenance-grid button{padding:18px}}
+@media(prefers-reduced-motion:reduce){html:focus-within{scroll-behavior:auto!important}*,*::before,*::after{scroll-behavior:auto!important;transition-duration:.01ms!important}}
