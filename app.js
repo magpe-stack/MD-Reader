@@ -322,70 +322,59 @@ async function metaPut(key,value){if(!db)throw Error('Banco indisponível');retu
 function todayKey(){const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`}
 function backupFilename(){return `MD-Reader-${todayKey()}.json`}
 async function backupPayload(){saveScroll();const documents=await tx('readonly',store=>store.getAll());return JSON.stringify({format:'md-reader-backup',version:13,created:new Date().toISOString(),libraries,activeLibraryId,prefs,documents},null,2)}
-async function writeBackupHandle(handle,data){const permission=await handle.queryPermission({mode:'readwrite'});if(permission!=='granted'&&(await handle.requestPermission({mode:'readwrite'}))!=='granted')throw Error('Permissão negada');const w=await handle.createWritable();await w.write(data);await w.close()}
+async function writeBackupHandle(handle,data){
+ const state=await handle.queryPermission({mode:'readwrite'});
+ if(state!=='granted'&&(await handle.requestPermission({mode:'readwrite'}))!=='granted')throw Error('Permissão de gravação não concedida');
+ const writable=await handle.createWritable();
+ try{await writable.write(data);await writable.close()}catch(e){try{await writable.abort()}catch{}throw e}
+}
+function validBackup(value){return value&&value.format==='md-reader-backup'&&Array.isArray(value.documents)&&Array.isArray(value.libraries)}
+async function inspectBackupHandle(handle,expectedName){
+ if(handle.name.toLowerCase()!==expectedName.toLowerCase())throw Error('Selecione o backup de hoje: '+expectedName);
+ const file=await handle.getFile();
+ if(file.size===0)return;
+ let value;try{value=JSON.parse(await file.text())}catch{throw Error('O arquivo existente não contém JSON válido. Nada foi alterado.')}
+ if(!validBackup(value))throw Error('O arquivo existente não é um backup do MD Reader. Nada foi alterado.');
+}
+async function chooseBackupHandle(filename){
+ return showSaveFilePicker({suggestedName:filename,types:[{description:'Backup MD Reader (.json)',accept:{'application/json':['.json']}}],excludeAcceptAllOption:false});
+}
 async function dailyBackup(update=false){
  try{
   if(!db)throw Error('Banco de dados indisponível');
-  const day=todayKey(), filename=backupFilename(), data=await backupPayload();
+  const day=todayKey(),filename=backupFilename();
+  // Obter os dados imediatamente antes de escrever, para incluir todas as alterações.
   const saved=await metaGet('daily-backup');
-  // Um arquivo que existe no disco não é automaticamente visível ao navegador.
-  // Nunca bloquear Atualizar só porque o registro local desapareceu.
-  if(update){
-   if(saved?.day===day&&saved.handle){
-    try{
-     await writeBackupHandle(saved.handle,data);
-     await metaPut('daily-backup',{day,handle:saved.handle,updated:new Date().toISOString()});
-     toast('Backup original atualizado.');return;
-    }catch(e){console.warn('Referência anterior indisponível:',e)}
-   }
-   // Atualizar é uma operação de gravação: usar SALVAR COMO, não ABRIR.
-   // O Windows permite selecionar o arquivo existente e confirmar a substituição.
-   if('showSaveFilePicker' in window){
-    try{
-     const picked=await showSaveFilePicker({suggestedName:filename,types:[{description:'Backup JSON do MD Reader',accept:{'application/json':['.json']}}],excludeAcceptAllOption:false});
-     if(!picked)return;
-     if(picked.name.toLowerCase()!==filename.toLowerCase()){
-      toast('Escolha o arquivo de hoje: '+filename+'. Nenhum arquivo foi alterado.');return;
-     }
-     // Se o arquivo já existe, validar antes de sobrescrever.
-     // O diálogo do Windows também solicita confirmação de substituição.
-     const previous=await picked.getFile();
-     if(previous.size>0){
-      let old;
-      try{old=JSON.parse(await previous.text())}catch{toast('Arquivo existente não é JSON válido. Nenhum dado foi alterado.');return}
-      if(old.format!=='md-reader-backup'||!Array.isArray(old.documents)||!Array.isArray(old.libraries)){
-       toast('O arquivo existente não é um backup válido do MD Reader. Nenhum dado foi alterado.');return;
-      }
-     }
-     await writeBackupHandle(picked,data);
-     await metaPut('daily-backup',{day,handle:picked,updated:new Date().toISOString()});
-     toast('Backup diário atualizado com sucesso.');return;
-    }catch(e){
-     if(e.name==='AbortError')return;
-     console.error('Atualização do backup:',e);
-     toast('Não foi possível gravar o backup. Confira as permissões.');return;
-    }
-   }
-   if(!confirm('Este navegador não permite sobrescrever o backup diretamente. Baixar uma nova cópia para substituir manualmente o arquivo existente?'))return;
-   downloadFile(filename,new Blob([data],{type:'application/json'}));
-   await metaPut('daily-backup',{day,updated:new Date().toISOString(),download:true});
-   toast('Cópia atualizada baixada. Substitua manualmente a anterior.');return;
+  if(!update&&saved?.day===day){toast('Já existe backup registrado hoje. Use Atualizar.');return}
+  if(typeof showSaveFilePicker!=='function'){
+   if(update&&!confirm('Este navegador não permite atualizar diretamente um arquivo. Baixar nova cópia para substituir manualmente o backup do dia?'))return;
+   const data=await backupPayload();downloadFile(filename,new Blob([data],{type:'application/json'}));
+   await metaPut('daily-backup',{day,filename,updated:new Date().toISOString(),download:true});
+   toast('Backup baixado. Para manter um arquivo por dia, substitua manualmente a cópia anterior.');return;
   }
-  if(saved?.day===day){
-   toast('Backup de hoje já registrado. Use Atualizar para escolher e sobrescrever o arquivo.');return;
-  }
-  if('showSaveFilePicker' in window){
+  let handle=null;
+  if(update&&saved?.day===day&&saved.handle){
    try{
-    const handle=await showSaveFilePicker({suggestedName:filename,types:[{description:'Backup JSON do MD Reader',accept:{'application/json':['.json']}}]});
-    await writeBackupHandle(handle,data);
-    await metaPut('daily-backup',{day,handle,updated:new Date().toISOString()});
-    toast('Backup diário guardado.');return;
-   }catch(e){if(e.name==='AbortError')return;console.warn('Gravação direta indisponível:',e)}
+    // Referências do IndexedDB podem sobreviver a reinícios, mas a permissão não é garantida.
+    await inspectBackupHandle(saved.handle,filename);
+    handle=saved.handle;
+   }catch(e){console.warn('Referência do backup não utilizável:',e)}
   }
-  downloadFile(filename,new Blob([data],{type:'application/json'}));
-  await metaPut('daily-backup',{day,updated:new Date().toISOString(),download:true});
-  toast('Backup baixado. Para atualizar, selecione o arquivo ou substitua manualmente.');
- }catch(e){console.error('Backup diário:',e);toast('Não foi possível concluir o backup: '+e.message)}
+  if(!handle){
+   // A caixa Salvar como permite escolher o arquivo existente e confirmar a substituição.
+   // O navegador não pode localizar um arquivo apenas por nome ou por pasta.
+   handle=await chooseBackupHandle(filename);
+   await inspectBackupHandle(handle,filename);
+  }
+  const data=await backupPayload();
+  await writeBackupHandle(handle,data);
+  await metaPut('daily-backup',{day,filename,handle,updated:new Date().toISOString()});
+  toast(update?'Backup diário atualizado com sucesso.':'Backup diário guardado com sucesso.');
+ }catch(e){
+  if(e?.name==='AbortError')return;
+  console.error('Backup diário:',e);
+  toast('Backup não alterado: '+(e?.message||'erro de gravação'));
+ }
 }
 
 function showPreferences(){
@@ -403,7 +392,7 @@ async function maintenanceAction(action){const out=$('#maintenanceOutput');const
  case 'install':{if(matchMedia('(display-mode: standalone)').matches||navigator.standalone===true){say('MD Reader já está aberto como aplicativo instalado.');break}if(installPrompt){const event=installPrompt;installPrompt=null;await event.prompt();const choice=await event.userChoice;say(choice?.outcome==='accepted'?'Instalação aceita. Aguarde a confirmação do navegador.':'Instalação não concluída. Você pode tentar novamente pelo menu do navegador.');syncInstallStatus()}else say('No Edge ou Chrome, abra o menu do navegador e escolha Instalar MD Reader ou Instalar aplicativo. No iPhone/iPad, use Compartilhar → Adicionar à Tela de Início. A disponibilidade depende do navegador e do sistema.');break}
  case 'uninstall':say('Abra a lista de aplicativos instalados do navegador ou do sistema, encontre MD Reader e escolha Desinstalar. Faça backup antes; dados locais podem ser removidos.');break;
  case 'updates':{const r=await navigator.serviceWorker?.getRegistration();if(r){await r.update();say('Verificação de atualização concluída. Recarregue a página para receber uma nova versão quando disponível.')}else say('Service Worker não registrado neste navegador.');break}
- case 'diagnostics':{const reg=await navigator.serviceWorker?.getRegistration();const cacheKeys=typeof caches!=='undefined'?await caches.keys():[];const persistent=await navigator.storage?.persisted?.();const ids=new Set(records.map(r=>r.id));const missingLibrary=records.filter(r=>!libraries.some(l=>l.id===(r.libraryId||'default'))).length;say(`MD Reader v22 | HTTPS: ${isSecureContext?'sim':'não'} | IndexedDB: ${db?'aberto':'indisponível'} | Service Worker: ${reg?.active?'ativo':reg?'registrado, não ativo':'não registrado'} | Cache v18: ${cacheKeys.includes('md-reader-core-v23')?'presente':'ausente'} | Persistência: ${persistent===true?'concedida':persistent===false?'não concedida':'indisponível'} | Bibliotecas: ${libraries.length} | Documentos: ${records.length} | IDs duplicados: ${records.length-ids.size} | Referências a bibliotecas ausentes: ${missingLibrary}`);break}
+ case 'diagnostics':{const reg=await navigator.serviceWorker?.getRegistration();const cacheKeys=typeof caches!=='undefined'?await caches.keys():[];const persistent=await navigator.storage?.persisted?.();const ids=new Set(records.map(r=>r.id));const missingLibrary=records.filter(r=>!libraries.some(l=>l.id===(r.libraryId||'default'))).length;say(`MD Reader v25 | HTTPS: ${isSecureContext?'sim':'não'} | IndexedDB: ${db?'aberto':'indisponível'} | Service Worker: ${reg?.active?'ativo':reg?'registrado, não ativo':'não registrado'} | Cache v25: ${cacheKeys.includes('md-reader-core-v25')?'presente':'ausente'} | Persistência: ${persistent===true?'concedida':persistent===false?'não concedida':'indisponível'} | Bibliotecas: ${libraries.length} | Documentos: ${records.length} | IDs duplicados: ${records.length-ids.size} | Referências a bibliotecas ausentes: ${missingLibrary}`);break}
  case 'offline':{const cache=await caches.open('md-reader-core-v23');const assets=['./index.html','./style.css','./app.js','./marked.js','./highlight.min.js','./manifest.json'];const missing=[];for(const asset of assets){if(!await cache.match(asset))missing.push(asset)}say(missing.length?'Recursos ausentes do cache v23: '+missing.join(', '):'Arquivos essenciais da v23 presentes no cache. Teste também com a rede desligada.');break}
  case 'storage':{const x=await navigator.storage?.estimate();say(x?`Uso estimado: ${(x.usage/1048576).toFixed(2)} MB; cota: ${(x.quota/1048576).toFixed(0)} MB.`:'Estimativa de armazenamento indisponível.');break}
  case 'protection':say('Os dados ficam neste navegador. Limpeza dos dados do site, desinstalação ou políticas de armazenamento podem apagá-los. Use Bibliotecas → Guardar diariamente.');break;

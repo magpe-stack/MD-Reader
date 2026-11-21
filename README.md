@@ -97,3 +97,14 @@ O comando Bibliotecas → Atualizar agora mostra todos os arquivos no seletor do
 
 ## v24 — Atualizar backup
 O botão Atualizar utiliza o diálogo **Salvar como**, não **Abrir**. Selecione o backup diário já existente e confirme sua substituição. O aplicativo valida o JSON existente antes de gravar.
+
+
+## v25 — Backup diário confiável
+
+- **Guardar** cria o backup JSON do dia, com todas as bibliotecas, textos, marcadores e preferências.
+- **Atualizar** tenta reutilizar a referência do arquivo salva no IndexedDB; se indisponível, abre **Salvar como** para escolher o arquivo do dia e confirmar a substituição.
+- Antes de sobrescrever, o app valida o JSON existente e seu nome. Um arquivo incompatível não é sobrescrito.
+- O acesso direto requer navegador compatível e permissão. Em navegadores sem File System Access, é gerado um download para substituição manual.
+- **Restaurar** mantém a confirmação e a importação transacional dos documentos.
+
+**Atenção:** o seletor Salvar como não encontra sozinho o diretório usado anteriormente. O usuário escolhe a pasta, se a permissão persistente não estiver disponível. Não limpe os dados do site.
