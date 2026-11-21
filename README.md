@@ -119,3 +119,11 @@ O botão Atualizar utiliza o diálogo **Salvar como**, não **Abrir**. Selecione
 - Compartilhamento continua com API nativa e alternativas de cópia/download.
 
 **Teste:** publicar via HTTPS, reinstalar ou atualizar o PWA se necessário, verificar Manutenção → Integração com Windows e Android, abrir um `.md` pelo sistema quando suportado, e executar as verificações offline.
+
+
+## v27 — Manutenção e splash
+
+- Manutenção com cartões em duas colunas, como Preferências, e responsividade mobile.
+- Removida a estrela artificial atrás do logotipo na splash; clarão suave posicionado atrás do vazado original do SVG, preservando os demais efeitos.
+- Suporte progressivo a Window Controls Overlay no PWA instalado; fallback para janela padrão.
+- Novo diagnóstico da barra de título integrada em Manutenção.
