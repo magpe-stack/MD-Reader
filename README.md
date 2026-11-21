@@ -946,3 +946,6 @@ E, acima de tudo, lembre-se de guardar cópias de segurança. Um bom ambiente de
 
 **Boa leitura!**
 
+
+
+<!-- Correção de backup: Guardar e Atualizar usam um único manipulador de clique e não iniciam downloads paralelos. -->
