@@ -538,3 +538,17 @@ body[data-reading-mode="page"] .page-controls{display:contents!important}
 body[data-reading-mode="page"] .page-progress{position:absolute!important;left:50%!important;bottom:8px!important;transform:translateX(-50%)!important;display:block!important;width:max-content!important;min-width:0!important;max-width:none!important;height:auto!important;margin:0!important;padding:0!important;border:0!important;border-radius:0!important;background:transparent!important;box-shadow:none!important;overflow:visible!important}
 body[data-reading-mode="page"] .page-progress>.page-pill{display:inline-flex!important;width:auto!important;min-width:74px!important;min-height:34px!important;margin:0!important;padding:5px 13px!important;border:2px solid var(--accent)!important;border-radius:999px!important;background:var(--surface)!important;color:var(--text)!important;box-shadow:0 2px 8px #00000012!important;font-size:13px!important;line-height:1!important}
 body[data-reading-mode="page"] .page-progress #pageIndicator{position:static!important;display:inline!important;transform:none!important;margin:0!important;padding:0!important;min-width:0!important;width:auto!important;font-size:inherit!important;color:inherit!important}
+
+/* v39 — Auditoria visual e acessibilidade: foco, áreas de toque e conteúdos longos */
+:where(button,a,input,select,textarea,summary,[role="button"],[tabindex="0"]):focus-visible{outline:3px solid var(--focus-ring,var(--accent));outline-offset:3px}
+#drawer[aria-hidden="true"]{visibility:hidden;pointer-events:none}
+#drawer[aria-hidden="false"]{visibility:visible}
+#drawer .menu-items>button,#drawer .drawer-home,#drawer .drawer-markers{min-height:40px}
+#drawer .menu-group>summary{min-height:40px;display:flex;align-items:center;justify-content:space-between}
+.markdown pre,.markdown table{max-width:100%;overscroll-behavior-x:contain}
+.markdown pre{tab-size:2}
+.markdown img{object-fit:contain}
+.maintenance-result,.shortcut-card dd,.shortcut-card dt{overflow-wrap:anywhere}
+@media(max-width:600px){.shortcut-card dl>div{align-items:flex-start}.shortcut-card dd{max-width:100%}.markdown pre{padding:12px;font-size:.8em}.markdown table{font-size:.86em}.markdown th,.markdown td{padding:7px 9px}}
+@media(forced-colors:active){.page-pill,.shortcut-card,.maintenance-grid button{border:1px solid CanvasText!important}.markdown mark.search-hit{forced-color-adjust:none}}
+@media(prefers-reduced-motion:reduce){#splash .splash-cutout-star,#splash .splash-beams,#splash .splash-stars{animation:none!important}#drawer{transition:none!important}}

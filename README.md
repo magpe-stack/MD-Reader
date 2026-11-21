@@ -238,3 +238,16 @@ No Modo Página, o controle de navegação inferior foi substituído por uma peq
 4. Compartilhar documento completo e trecho selecionado nos dispositivos compatíveis.
 5. Em Manutenção, executar Diagnóstico, Verificar disponibilidade offline, Verificar bibliotecas e Armazenamento.
 6. Testar instalação e leitura offline no Edge/Chrome e no Android, sem limpar dados do site.
+
+
+## Novidades da v39 — Auditoria visual e acessibilidade
+
+- Foco por teclado mais visível em botões, links, campos e elementos interativos.
+- Menu lateral fechado removido da navegação por teclado (`inert`); ao abrir, foco no botão Fechar; ao fechar, retorno ao controle anterior.
+- Ciclo de Tab no menu inclui os cabeçalhos expansíveis (`summary`) e ignora opções ocultas.
+- Áreas de toque do menu ajustadas para 40 px sem voltar ao espaçamento excessivo.
+- Melhor adaptação de código, tabelas e cartões de atalhos a telas pequenas.
+- Suporte adicional a contraste forçado e redução de movimento.
+- Diagnóstico e Service Worker atualizados para v39.
+
+**Teste manual recomendado:** navegar apenas com Tab/Shift+Tab e Esc; testar grupos fechados e abertos, leitor no celular, temas claro/escuro, modo página e documentos com tabelas longas. Verificações de sintaxe não substituem testes em navegador.
