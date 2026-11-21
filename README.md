@@ -221,3 +221,20 @@ No Modo Página, o controle de navegação inferior foi substituído por uma peq
 - Paginação em uma única pílula, sem caixa externa no desktop, com cores vinculadas ao tema.
 - Mantido o seletor de página ao tocar na pílula, bem como os controles de teclado.
 - Diagnóstico e cache offline atualizados para v37.
+
+
+## Novidades da v38 — Auditoria funcional inicial
+
+- Removida a notificação temporária “Modo página ativado. Use as setas para navegar.” ao alternar os modos de leitura; o estado continua visível pelos controles e pela preferência selecionada.
+- Verificação offline corrigida para não criar um cache vazio durante o diagnóstico: agora informa quando o cache da versão não existe.
+- Diagnósticos, mensagens de reparação e Service Worker atualizados para v38.
+- Revisão estática dos fluxos de navegação, backup diário, restauração, marcadores e compartilhamento. Esta revisão não equivale a testes reais em Edge/Android.
+
+### Roteiro de testes funcionais
+
+1. Alternar Rolagem/Página e verificar ausência do aviso, preservando a navegação e a pílula de páginas.
+2. Abrir documentos, criar bibliotecas e marcadores, fechar e reabrir o app.
+3. Guardar backup, atualizar o arquivo do dia e verificar o JSON em Manutenção antes de testar Restaurar.
+4. Compartilhar documento completo e trecho selecionado nos dispositivos compatíveis.
+5. Em Manutenção, executar Diagnóstico, Verificar disponibilidade offline, Verificar bibliotecas e Armazenamento.
+6. Testar instalação e leitura offline no Edge/Chrome e no Android, sem limpar dados do site.
