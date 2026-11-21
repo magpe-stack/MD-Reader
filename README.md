@@ -135,3 +135,15 @@ O botão Atualizar utiliza o diálogo **Salvar como**, não **Abrir**. Selecione
 - A recomendação de backup aparece no cartão Proteção do armazenamento.
 - Removido o clarão circular adicionado na v27. A estrela vazada original do logotipo recebe brilho localizado, mantendo os demais efeitos.
 - Atualizado cache e diagnóstico para v28.
+
+
+## v29 — Manutenção avançada e auditoria segura
+
+- Verificar bibliotecas: examina IDs repetidos, vínculos a bibliotecas inexistentes e registros incompletos, sem alterar os dados.
+- Verificar backup JSON: seletor exclusivo de verificação, separado do comando Restaurar; valida formato, limites, bibliotecas e documentos sem importar dados.
+- Armazenamento: uso, cota aproximada, percentual e estado de persistência.
+- Diagnóstico, verificação offline, reparação e Service Worker atualizados para v29.
+- Resultados permanecem dentro dos respectivos cartões de Manutenção.
+- Splash e demais funcionalidades preservados.
+
+**Teste recomendado:** execute a auditoria das bibliotecas e verifique uma cópia de backup; confirme que o conteúdo não foi modificado. Teste o cache com a rede desligada após uma primeira abertura online.
