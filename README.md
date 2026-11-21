@@ -1,3 +1,11 @@
+## Novidades da v31
+
+- Modo Página: controle deslizante para ir diretamente a qualquer página, acessível por teclado.
+- Indicador de página atualizado ao navegar; atalhos Home e End quando o foco está na leitura.
+- Retomada proporcional da posição de leitura ao mudar o tamanho da janela, fonte ou largura da coluna.
+- Repaginação quando imagens terminam de carregar, preservando o progresso.
+- Mantidos os cartões e diagnósticos de Manutenção e o Splash aprovado na v30.
+
 # MD Reader — Manual do Usuário
 
 **Versão 30 · PWA Markdown · Português brasileiro**
