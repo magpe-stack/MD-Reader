@@ -1,6 +1,6 @@
-/* MD Reader v41 — recursos estáticos versionados e atualização segura. */
-const CACHE='md-reader-static-v41';
-const CORE='md-reader-core-v41';
+/* MD Reader v42 — recursos estáticos versionados e atualização segura. */
+const CACHE='md-reader-static-v42';
+const CORE='md-reader-core-v42';
 const ASSETS=["./", "./index.html", "./style.css", "./app.js", "./manifest.json", "./icon.svg", "./favicon-16.png", "./favicon-32.png", "./apple-touch-icon.png", "./icon-192.png", "./icon-512.png", "./marked.js", "./highlight.min.js", "./manual.md"];
 const scope=new URL(self.registration.scope);
 self.addEventListener('install',event=>event.waitUntil((async()=>{
