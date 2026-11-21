@@ -108,3 +108,14 @@ O botão Atualizar utiliza o diálogo **Salvar como**, não **Abrir**. Selecione
 - **Restaurar** mantém a confirmação e a importação transacional dos documentos.
 
 **Atenção:** o seletor Salvar como não encontra sozinho o diretório usado anteriormente. O usuário escolhe a pasta, se a permissão persistente não estiver disponível. Não limpe os dados do site.
+
+
+## v26 — Integração nativa e manutenção
+
+- Diagnóstico **Integração com Windows e Android** na página Manutenção: instalação, abertura pelo sistema, seletores de arquivos e compartilhamento.
+- O tratamento de arquivos recebidos pelo sistema passa a ser registrado depois da abertura do IndexedDB, evitando disputa com a inicialização.
+- Corrigidas referências antigas ao cache v23 nas ações Verificar disponibilidade offline e Reparar arquivos do aplicativo: agora usam v26.
+- Mantidos os atalhos e a declaração de associação `.md` no manifesto; o registro dessa associação depende do navegador e do sistema.
+- Compartilhamento continua com API nativa e alternativas de cópia/download.
+
+**Teste:** publicar via HTTPS, reinstalar ou atualizar o PWA se necessário, verificar Manutenção → Integração com Windows e Android, abrir um `.md` pelo sistema quando suportado, e executar as verificações offline.
