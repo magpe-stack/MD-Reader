@@ -203,3 +203,8 @@ O MD Reader não exige conta nem possui servidor próprio de documentos. A abert
 Para publicar no GitHub Pages, envie **todos os arquivos do ZIP diretamente para a raiz do repositório**: `index.html`, `style.css`, `app.js`, `manifest.json`, `sw.js`, bibliotecas JavaScript, ícones e este `README.md`. Não altere os nomes dos arquivos sem atualizar suas referências. Use HTTPS, recarregue após a publicação e confira **Sistema → Manutenção → Diagnóstico**.
 
 **Versão 30:** estabilização do diagnóstico de instalação, revisão de navegação por teclado, contenção de conteúdo largo, cache versionado e manual completo. Nenhuma atualização de versão substitui a necessidade de testar o backup e a restauração com dados de teste.
+
+
+## Novidades da v35 — Atalhos
+
+Em **Ajuda → Atalhos**, consulte os comandos reais de abertura, busca, paginação e navegação acessível. **Ctrl + /** abre a página de atalhos; no macOS use **⌘ + /**. Os comandos de paginação dependem do Modo Página ativo.

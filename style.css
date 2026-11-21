@@ -500,3 +500,14 @@ body[data-reading-mode="page"] #pageSeek:disabled{opacity:.4;cursor:default}
 body:not([data-reading-mode="page"]) .page-progress{display:none}
 @media(max-width:600px){body[data-reading-mode="page"] .page-progress{max-width:calc(100% - 148px);gap:4px;padding:5px 7px}body[data-reading-mode="page"] #pageIndicator{font-size:11px;min-width:45px}}
 @media print{.page-progress{display:none!important}}
+
+/* v35 — Ajuda > Atalhos, com os mesmos cartões das Preferências */
+.shortcuts-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px;margin:28px 0;max-width:1240px}
+.shortcut-card{min-width:0;background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:24px 28px}
+.shortcut-card h2{font-size:1.12rem;margin:0 0 14px}
+.shortcut-card p{font-size:.88rem;line-height:1.55;margin:0 0 12px;color:var(--muted)}
+.shortcut-card dl{margin:0}.shortcut-card dl>div{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px 16px;padding:11px 0;border-top:1px solid var(--line)}
+.shortcut-card dt{font-weight:500;flex:1 1 175px}.shortcut-card dd{margin:0;display:flex;align-items:center;flex-wrap:wrap;gap:5px;font-size:.9rem}
+.shortcut-card kbd{display:inline-block;padding:4px 8px;border:1px solid var(--line);border-bottom-width:2px;border-radius:7px;background:var(--bg);color:var(--text);font:600 .84rem ui-monospace,SFMono-Regular,Consolas,monospace;white-space:nowrap}
+.shortcuts-note{max-width:900px;line-height:1.6}
+@media(max-width:750px){.shortcuts-grid{grid-template-columns:1fr;gap:12px}.shortcut-card{padding:18px 20px}}
