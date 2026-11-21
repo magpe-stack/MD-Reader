@@ -320,19 +320,43 @@ async function saveCurrentFile(){
 async function copySelected(){const value=getSelection()?.toString()||records.find(r=>r.id===currentId)?.content||'';if(!value){toast('Não há texto para copiar.');return}try{if(!navigator.clipboard?.writeText)throw Error('Clipboard API indisponível');await navigator.clipboard.writeText(value);toast('Texto copiado.')}catch{toast('Cópia indisponível. Use a seleção e Ctrl+C.')}}
 async function shareCurrent(){
  const rec=records.find(r=>r.id===currentId);
- if(!rec){toast('Abra um texto para compartilhar.');return}
- const selected=getSelection()?.toString().trim();
- const title=rec.name;
- try{
-  if(navigator.share){
-   const file=new File([rec.content],title.toLowerCase().endsWith('.md')?title:title+'.md',{type:'text/markdown'});
-   const data=navigator.canShare?.({files:[file]})?{title,files:[file]}:{title,text:selected||rec.content.slice(0,5000)};
-   await navigator.share(data);return;
+ if(!rec){toast('Abra um documento para compartilhar.');return}
+ const selected=(getSelection()?.toString()||'').trim();
+ const title=rec.name||'documento.md';
+ const filename=/\.md$/i.test(title)?title:title+'.md';
+ const content=selected||rec.content;
+ // Um trecho selecionado é compartilhado como texto; o documento completo como arquivo.
+ // Não se tenta novamente navigator.share após falha: o gesto do usuário pode ter expirado.
+ if(typeof navigator.share==='function'){
+  try{
+   if(selected){await navigator.share({title,text:selected});return}
+   const file=new File([rec.content],filename,{type:'text/markdown'});
+   const fileData={title,files:[file]};
+   if(typeof navigator.canShare==='function'&&navigator.canShare(fileData)){
+    await navigator.share(fileData);return;
+   }
+   await navigator.share({title,text:rec.content.slice(0,5000)});
+   if(rec.content.length>5000)toast('Compartilhado apenas o início do texto (limite de 5.000 caracteres).');
+   return;
+  }catch(e){
+   if(e?.name==='AbortError')return;
+   console.warn('Compartilhamento nativo falhou:',e);
+   // Uma falha de envio não deve resultar em mensagem de sucesso.
+   toast('Não foi possível compartilhar pelo sistema. Use Copiar ou Salvar Markdown.');
+   return;
   }
-  if(navigator.clipboard?.writeText){await navigator.clipboard.writeText(selected||rec.content);toast('Compartilhamento indisponível. Texto copiado.');return}
-  downloadFile(title.endsWith('.md')?title:title+'.md',new Blob([rec.content],{type:'text/markdown;charset=utf-8'}));toast('Compartilhamento indisponível. Arquivo exportado.');
- }catch(e){if(e.name!=='AbortError'){console.error(e);toast('Não foi possível compartilhar.');}}
+ }
+ // Alternativa para desktop sem Web Share API: copia trecho ou documento.
+ try{
+  if(!navigator.clipboard?.writeText)throw Error('Área de transferência indisponível');
+  await navigator.clipboard.writeText(content);
+  toast(selected?'Trecho copiado: cole no aplicativo desejado.':'Documento copiado: cole no aplicativo desejado.');
+ }catch(e){
+  console.warn('Falha ao copiar para compartilhar:',e);
+  toast('Compartilhamento indisponível. Use Salvar Markdown para exportar o arquivo.');
+ }
 }
+
 function showHome(){
  setView('emptyState','Início');
  renderLists();closeDrawer();
@@ -464,17 +488,17 @@ async function maintenanceAction(action){const btn=document.querySelector(`[data
  case 'install':{if(matchMedia('(display-mode: standalone)').matches||navigator.standalone===true){say('MD Reader já está aberto como aplicativo instalado.');break}if(installPrompt){const event=installPrompt;installPrompt=null;await event.prompt();const choice=await event.userChoice;say(choice?.outcome==='accepted'?'Instalação aceita. Aguarde a confirmação do navegador.':'Instalação não concluída. Você pode tentar novamente pelo menu do navegador.');syncInstallStatus()}else say('No Edge ou Chrome, abra o menu do navegador e escolha Instalar MD Reader ou Instalar aplicativo. No iPhone/iPad, use Compartilhar → Adicionar à Tela de Início. A disponibilidade depende do navegador e do sistema.');break}
  case 'uninstall':say('Abra a lista de aplicativos instalados do navegador ou do sistema, encontre MD Reader e escolha Desinstalar. Faça backup antes; dados locais podem ser removidos.');break;
  case 'updates':{const r=await navigator.serviceWorker?.getRegistration();if(r){await r.update();say('Verificação de atualização concluída. Recarregue a página para receber uma nova versão quando disponível.')}else say('Service Worker não registrado neste navegador.');break}
- case 'diagnostics':{const reg=await navigator.serviceWorker?.getRegistration();const cacheKeys=typeof caches!=='undefined'?await caches.keys():[];const persistent=await navigator.storage?.persisted?.();const ids=new Set(records.map(r=>r.id));const missingLibrary=records.filter(r=>!libraries.some(l=>l.id===(r.libraryId||'default'))).length;say(`MD Reader v33 | HTTPS: ${isSecureContext?'sim':'não'} | IndexedDB: ${db?'aberto':'indisponível'} | Service Worker: ${reg?.active?'ativo':reg?'registrado, não ativo':'não registrado'} | Cache v33: ${cacheKeys.includes('md-reader-core-v33')?'presente':'ausente'} | Persistência: ${persistent===true?'concedida':persistent===false?'não concedida':'indisponível'} | Bibliotecas: ${libraries.length} | Documentos: ${records.length} | IDs duplicados: ${records.length-ids.size} | Referências a bibliotecas ausentes: ${missingLibrary}`);break}
- case 'native':{const installed=matchMedia('(display-mode: standalone)').matches||navigator.standalone===true;const fileHandling=('launchQueue' in window&&typeof window.launchQueue?.setConsumer==='function');const filePicker=typeof window.showOpenFilePicker==='function';const savePicker=typeof window.showSaveFilePicker==='function';const sharing=typeof navigator.share==='function';const files=typeof navigator.canShare==='function';say(`Integração nativa | Instalado como aplicativo: ${installed?'sim':'não'} | Abertura de arquivos pelo sistema: ${fileHandling?'API disponível (requer associação do aplicativo ao .md)':'indisponível'} | Abrir arquivo: ${filePicker?'seletor nativo':'seletor compatível'} | Salvar arquivo: ${savePicker?'seletor nativo':'download'} | Compartilhar: ${sharing?'disponível':'indisponível'} | Compartilhar arquivo: ${files?'verificado no momento do envio':'não garantido'}. O suporte não garante que o sistema tenha registrado o MD Reader como aplicativo padrão.`);break}
+ case 'diagnostics':{const reg=await navigator.serviceWorker?.getRegistration();const cacheKeys=typeof caches!=='undefined'?await caches.keys():[];const persistent=await navigator.storage?.persisted?.();const ids=new Set(records.map(r=>r.id));const missingLibrary=records.filter(r=>!libraries.some(l=>l.id===(r.libraryId||'default'))).length;say(`MD Reader v34 | HTTPS: ${isSecureContext?'sim':'não'} | IndexedDB: ${db?'aberto':'indisponível'} | Service Worker: ${reg?.active?'ativo':reg?'registrado, não ativo':'não registrado'} | Cache v34: ${cacheKeys.includes('md-reader-core-v34')?'presente':'ausente'} | Persistência: ${persistent===true?'concedida':persistent===false?'não concedida':'indisponível'} | Bibliotecas: ${libraries.length} | Documentos: ${records.length} | IDs duplicados: ${records.length-ids.size} | Referências a bibliotecas ausentes: ${missingLibrary}`);break}
+ case 'native':{const installed=matchMedia('(display-mode: standalone)').matches||navigator.standalone===true;const fileHandling=('launchQueue' in window&&typeof window.launchQueue?.setConsumer==='function');const filePicker=typeof window.showOpenFilePicker==='function';const savePicker=typeof window.showSaveFilePicker==='function';const sharing=typeof navigator.share==='function';const files=typeof navigator.canShare==='function';const clipboard=!!navigator.clipboard?.writeText;say(`Integração nativa | Instalado como aplicativo: ${installed?'sim':'não'} | Abertura de arquivos pelo sistema: ${fileHandling?'API disponível (requer associação do aplicativo ao .md)':'indisponível'} | Abrir arquivo: ${filePicker?'seletor nativo':'seletor compatível'} | Salvar arquivo: ${savePicker?'seletor nativo':'download'} | Compartilhar: ${sharing?'disponível':'indisponível'} | Compartilhar arquivo: ${files?'compatibilidade verificada no envio':'sem verificação de compatibilidade'} | Alternativa copiar: ${clipboard?'disponível':'indisponível'}. O suporte não garante que o sistema tenha registrado o MD Reader como aplicativo padrão.`);break}
  case 'overlay':{const installed=matchMedia('(display-mode: standalone)').matches||matchMedia('(display-mode: window-controls-overlay)').matches;const api=!!navigator.windowControlsOverlay;const active=matchMedia('(display-mode: window-controls-overlay)').matches;const rect=api?navigator.windowControlsOverlay.getTitlebarAreaRect():null;say(`Barra de título integrada | Aplicativo instalado: ${installed?'sim':'não detectado'} | Window Controls Overlay: ${api?'API disponível':'não disponível'} | Modo ativo: ${active?'sim':'não'}${rect?' | Área livre: '+Math.round(rect.width)+' × '+Math.round(rect.height)+' px':''}. Para ativar, instale o MD Reader no Edge ou Chrome compatível e habilite a sobreposição pelo controle da janela, quando oferecido. No navegador comum, a barra tradicional é mantida.`);break}
- case 'offline':{const cache=await caches.open('md-reader-core-v33');const assets=['./index.html','./style.css','./app.js','./marked.js','./highlight.min.js','./manifest.json'];const missing=[];for(const asset of assets){if(!await cache.match(asset))missing.push(asset)}say(missing.length?'Recursos ausentes do cache v33: '+missing.join(', '):'Arquivos essenciais da v33 presentes no cache. Teste também com a rede desligada.');break}
+ case 'offline':{const cache=await caches.open('md-reader-core-v34');const assets=['./index.html','./style.css','./app.js','./marked.js','./highlight.min.js','./manifest.json'];const missing=[];for(const asset of assets){if(!await cache.match(asset))missing.push(asset)}say(missing.length?'Recursos ausentes do cache v34: '+missing.join(', '):'Arquivos essenciais da v34 presentes no cache. Teste também com a rede desligada.');break}
  case 'storage':{const x=await navigator.storage?.estimate();const p=await navigator.storage?.persisted?.();say(x?`Uso estimado: ${(x.usage/1048576).toFixed(2)} MB; cota estimada: ${(x.quota/1048576).toFixed(0)} MB. Ocupação aproximada: ${(x.usage/x.quota*100).toFixed(1)}%. Persistência: ${p===true?'concedida':p===false?'não concedida':'indisponível'}. Valores fornecidos pelo navegador.`:'Estimativa de armazenamento indisponível.');break}
  case 'protection':say('Os dados ficam neste navegador. Limpeza dos dados do site, desinstalação ou políticas de armazenamento podem apagá-los. Use Bibliotecas → Guardar diariamente.');break;
  case 'persist':{const ok=await navigator.storage?.persist?.();say(ok?'Persistência concedida pelo navegador.':'Persistência não concedida ou indisponível. Faça backups regulares.');break}
  case 'projects':{const fresh=await tx('readonly',s=>s.getAll());const report=auditCollection(libraries,fresh);say(`${formatAudit(report)} Biblioteca ativa: ${libraries.find(x=>x.id===activeLibraryId)?.name||'não encontrada'}.`);break}
  case 'backup':$('#verifyBackupInput').click();say('Selecione um JSON para verificar sua estrutura, sem restaurar ou substituir dados.');break;
  case 'cache':if(confirm('Limpar somente caches estáticos do MD Reader? Os documentos locais serão preservados.')){const keys=await caches.keys();await Promise.all(keys.filter(k=>k.startsWith('md-reader-static-')||k.startsWith('md-reader-core-')).map(k=>caches.delete(k)));say('Cache estático removido. Recarregue online para reconstruí-lo.')}break;
- case 'repair':{const r=await navigator.serviceWorker?.getRegistration();await r?.update();const c=await caches.open('md-reader-core-v33');await c.addAll(['./','./index.html','./style.css','./app.js','./marked.js','./highlight.min.js','./manifest.json','./icon.svg','./icon-192.png','./icon-512.png']);say('Recursos essenciais baixados novamente para o cache v33. Requer conexão com a internet.');break}
+ case 'repair':{const r=await navigator.serviceWorker?.getRegistration();await r?.update();const c=await caches.open('md-reader-core-v34');await c.addAll(['./','./index.html','./style.css','./app.js','./marked.js','./highlight.min.js','./manifest.json','./icon.svg','./icon-192.png','./icon-512.png']);say('Recursos essenciais baixados novamente para o cache v34. Requer conexão com a internet.');break}
  case 'defaults':if(confirm('Restaurar somente as preferências padrão? Documentos e bibliotecas serão mantidos.')){prefs={...defaults};savePrefs();applyPrefs();syncQuickActions();say('Preferências restauradas.')}break;
  }}catch(e){console.error(e);say('Operação não concluída: '+e.message)}
 }

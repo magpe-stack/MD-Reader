@@ -1,3 +1,21 @@
+## Novidades da v34
+
+- Compartilhar: trecho selecionado é enviado como texto; documento inteiro é enviado como `.md` quando o destino aceita arquivos.
+- Se o sistema não oferecer compartilhamento, tenta copiar o texto para a área de transferência, com aviso explícito.
+- Falhas e cancelamentos de compartilhamento não são tratados como envio concluído.
+- Diagnóstico de integração nativa em Manutenção informa também a disponibilidade da alternativa de cópia.
+- Cache e diagnóstico atualizados para v34. Mensagens continuam dentro dos respectivos cartões de Manutenção.
+- O Splash e suas animações foram preservados.
+
+### Como testar Compartilhar
+
+1. Abra um Markdown e use **Compartilhar** na barra lateral. No Android compatível, deve abrir a folha nativa de compartilhamento; selecione um destino que aceite arquivos.
+2. Selecione um trecho e use **Compartilhar** novamente. Deve enviar somente o trecho como texto.
+3. No Edge/Windows, caso o compartilhamento não seja oferecido, o texto deve ser copiado para colar em outro aplicativo, desde que a Clipboard API esteja disponível.
+4. Cancelar a folha de compartilhamento não deve gerar confirmação falsa.
+
+> A disponibilidade e aceitação do formato `.md` dependem do navegador, sistema operacional e aplicativo de destino. Os testes de integração precisam ser feitos em dispositivos reais.
+
 ## Novidades da v33
 
 - Gestos de paginação limitados à área do documento, evitando trocas acidentais de página ao deslizar controles e áreas de código.
