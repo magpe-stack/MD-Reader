@@ -1,3 +1,10 @@
+## Novidades da v33
+
+- Gestos de paginação limitados à área do documento, evitando trocas acidentais de página ao deslizar controles e áreas de código.
+- Diagnósticos, verificação offline e reparação do cache passam a identificar corretamente a versão 33 (incluindo mensagens exibidas nos cartões).
+- Cache offline versionado para v33.
+- Preservados os resultados internos dos cartões de Manutenção, o Splash e o armazenamento local.
+
 ## Novidades da v32
 
 - O sumário lateral agora navega para a página correta também no **Modo Página**, sem depender do comportamento padrão de âncoras.

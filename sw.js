@@ -1,6 +1,6 @@
 /* MD Reader v18 — recursos estáticos versionados e atualização segura. */
-const CACHE='md-reader-static-v32';
-const CORE='md-reader-core-v32';
+const CACHE='md-reader-static-v33';
+const CORE='md-reader-core-v33';
 const ASSETS=["./", "./index.html", "./style.css", "./app.js", "./manifest.json", "./icon.svg", "./favicon-16.png", "./favicon-32.png", "./apple-touch-icon.png", "./icon-192.png", "./icon-512.png", "./marked.js", "./highlight.min.js"];
 const scope=new URL(self.registration.scope);
 self.addEventListener('install',event=>event.waitUntil((async()=>{
