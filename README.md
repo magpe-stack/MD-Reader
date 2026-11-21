@@ -1,3 +1,13 @@
+## Novidades da v32
+
+- O sumário lateral agora navega para a página correta também no **Modo Página**, sem depender do comportamento padrão de âncoras.
+- Marcadores de trechos tentam recuperar a passagem pelo texto exato quando os deslocamentos mudam após pequenas edições. Se houver ocorrências repetidas, priorizam a mais próxima da posição original.
+- Corrigido o diagnóstico de Manutenção para verificar o cache `md-reader-core-v32` (a v31 consultava indevidamente o cache v30).
+- Service Worker e recursos offline versionados para v32.
+- Os resultados da Manutenção continuam dentro de seus cartões; o Splash e as preferências foram preservados.
+
+**Limitação:** se o texto do trecho for alterado, não é possível garantir sua recuperação; o leitor informa quando não encontra correspondência.
+
 ## Novidades da v31
 
 - Modo Página: controle deslizante para ir diretamente a qualquer página, acessível por teclado.
